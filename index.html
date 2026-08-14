@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wewaked — thoughts, ideas, and stories</title>
+  <meta name="description" content="Wewaked — thoughts, ideas, and stories on everything. Tech, life, gaming, and whatever feels worth writing about." />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Wewaked" />
+  <meta property="og:description" content="Thoughts, ideas, and stories on everything — tech, life, gaming, and whatever feels worth writing about." />
+  <meta property="og:url" content="/" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>W</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text: #1a1a1a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --accent: #111827;
+      --tag-bg: #f3f4f6;
+      --focus-ring: #2563eb;
+      color-scheme: light dark;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --border: #2b2f36;
+        --bg: #0f1115;
+        --accent: #f3f4f6;
+        --tag-bg: #1f242b;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 8px 16px;
+      z-index: 100;
+      border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus { left: 0; }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .header-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.25rem, 1.1rem + 0.4vw, 1.5rem);
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+    nav[aria-label] {
+      display: flex;
+      align-items: center;
+    }
+    nav[aria-label] a {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-left: 24px;
+      transition: color 0.15s;
+    }
+    nav[aria-label] a:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 72px 24px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero p {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.75;
+    }
+
+    /* ── Posts ── */
+    .posts {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .post-item {
+      padding: 36px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .post-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: var(--tag-bg);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+    .post-date {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .post-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.45rem);
+      font-weight: 600;
+      line-height: 1.35;
+      margin-bottom: 10px;
+      transition: color 0.15s;
+    }
+    .post-title a:hover { color: var(--muted); }
+    .post-excerpt {
+      font-size: 0.925rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .read-more {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      letter-spacing: 0.02em;
+    }
+    .read-more::after { content: '→'; transition: transform 0.15s; }
+    .post-item:hover .read-more::after, .read-more:focus-visible::after { transform: translateX(4px); }
+
+    /* ── About ── */
+    .about {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 56px 24px 0;
+    }
+    .about h2 {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.5rem);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .about p {
+      color: var(--muted);
+      max-width: 520px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer span {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 20px;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">Wewaked</a>
+      <nav aria-label="Primary">
+        <a href="#articles">Articles</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Wewaked</h1>
+    <p>Thoughts, ideas, and stories on everything — tech, life, gaming, and whatever feels worth writing about.</p>
+  </section>
+
+  <main id="content" class="posts" aria-labelledby="articles">
+    <h2 id="articles" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Articles</h2>
+
+    <article class="post-item">
+      <div class="post-meta">
+        <span class="post-tag">Tech</span>
+        <time class="post-date" datetime="2026-08-14">August 14, 2026</time>
+      </div>
+      <h3 class="post-title"><a href="/posts/github-pages-custom-domains">Getting Started with GitHub Pages and Custom Domains</a></h3>
+      <p class="post-excerpt">Setting up a custom domain for GitHub Pages sounds simple — and it is, once you know where to look. Here's a walkthrough of the entire process, from DNS records to verification.</p>
+      <a class="read-more" href="/posts/github-pages-custom-domains">Read more</a>
+    </article>
+
+    <article class="post-item">
+      <div class="post-meta">
+        <span class="post-tag">Gaming</span>
+        <time class="post-date" datetime="2026-08-10">August 10, 2026</time>
+      </div>
+      <h3 class="post-title"><a href="/posts/single-player-games-multiplayer-world">Why Single-Player Games Still Have a Place in a Multiplayer World</a></h3>
+      <p class="post-excerpt">The gaming industry has pushed hard toward always-online, live-service titles. But there's something irreplaceable about a story that's entirely yours — no lobbies, no matchmaking, just you and the game.</p>
+      <a class="read-more" href="/posts/single-player-games-multiplayer-world">Read more</a>
+    </article>
+
+    <article class="post-item">
+      <div class="post-meta">
+        <span class="post-tag">Life</span>
+        <time class="post-date" datetime="2026-08-05">August 5, 2026</time>
+      </div>
+      <h3 class="post-title"><a href="/posts/quiet-habit-changed-how-i-think">The Quiet Habit That Changed How I Think</a></h3>
+      <p class="post-excerpt">I started writing for 10 minutes every morning — not a journal, not a blog, just raw thoughts. Six months in, I notice something strange: I'm calmer, clearer, and considerably less bad at decisions.</p>
+      <a class="read-more" href="/posts/quiet-habit-changed-how-i-think">Read more</a>
+    </article>
+
+    <article class="post-item">
+      <div class="post-meta">
+        <span class="post-tag">Tech</span>
+        <time class="post-date" datetime="2026-07-28">July 28, 2026</time>
+      </div>
+      <h3 class="post-title"><a href="/posts/tools-i-actually-use-every-day">Tools I Actually Use Every Day (and a Few I Thought I Would)</a></h3>
+      <p class="post-excerpt">Every year I overhaul my setup, convinced that the right app will finally fix my productivity. Here's an honest look at what stuck, what didn't, and what I wish I'd tried sooner.</p>
+      <a class="read-more" href="/posts/tools-i-actually-use-every-day">Read more</a>
+    </article>
+
+  </main>
+
+  <section class="about" id="about">
+    <h2>About</h2>
+    <p>Wewaked is a personal blog about tech, life, and gaming. Written by one person, at odd hours, about whatever feels worth writing about.</p>
+  </section>
+
+  <footer>
+    <span>© 2026 Wewaked</span>
+    <div class="footer-links">
+      <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">Twitter</a>
+      <a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="/feed.xml">RSS</a>
+    </div>
+  </footer>
+
+</body>
+</html>
