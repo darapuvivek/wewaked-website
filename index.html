@@ -216,6 +216,69 @@
       line-height: 1.75;
     }
 
+    /* ── Case dossier (always-visible case details) ── */
+    .dossier {
+      max-width: 720px;
+      margin: 0 auto 36px;
+      padding: 24px 28px;
+      border-radius: 12px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+    }
+    .dossier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px 24px;
+      margin-bottom: 18px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dossier-grid > div { display: flex; flex-direction: column; gap: 2px; }
+    .dossier-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-dim);
+    }
+    .dossier-narrative {
+      font-family: 'Lora', serif;
+      color: var(--text);
+      line-height: 1.75;
+      margin-bottom: 20px;
+    }
+    .dossier h4 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-dim);
+      margin: 18px 0 10px;
+    }
+    .dossier-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .dossier-list li {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      padding-left: 14px;
+      border-left: 2px solid var(--accent-dim);
+    }
+    .dossier-list li strong { color: var(--text); }
+    .dossier-list li span { color: var(--muted); }
+
+    .scene-hint {
+      max-width: 720px;
+      margin: 0 auto 16px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
     .desk-scene {
       position: relative;
       height: 460px;
@@ -284,19 +347,31 @@
     }
     .shape.magnifier {
       width: 30px; height: 30px;
-      border: 5px solid #cbd0d6;
+      border: 5px solid #d8dde3;
       border-radius: 50%;
       position: relative;
-      background: rgba(200, 220, 235, 0.08);
+      background:
+        radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.12) 24%, transparent 45%),
+        radial-gradient(circle at 60% 65%, rgba(148, 197, 224, 0.18), transparent 60%);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25);
+    }
+    .shape.magnifier::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f1f4f7, #9aa3ad);
+      z-index: -1;
     }
     .shape.magnifier::after {
       content: '';
       position: absolute;
-      width: 16px; height: 4px;
-      background: #cbd0d6;
-      bottom: -12px; right: -10px;
+      width: 17px; height: 5px;
+      background: linear-gradient(90deg, #8a5a2e, #5c3a1c);
+      bottom: -13px; right: -11px;
       transform: rotate(45deg);
-      border-radius: 2px;
+      border-radius: 3px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.4);
     }
     .shape.photo {
       width: 40px; height: 48px;
@@ -317,26 +392,46 @@
       background-image: repeating-linear-gradient(180deg, transparent 0 7px, rgba(0,0,0,0.12) 7px 8px);
     }
     .shape.cup {
-      width: 26px; height: 26px;
-      background: linear-gradient(180deg, #4b4238, #2e2822);
+      width: 26px; height: 22px;
+      background: linear-gradient(180deg, #5a4f42, #2e2822);
       border-radius: 0 0 10px 10px;
       position: relative;
+      margin-bottom: 10px;
     }
     .shape.cup::after {
       content: '';
       position: absolute;
-      right: -10px; top: 4px;
+      right: -10px; top: 2px;
       width: 10px; height: 12px;
       border: 3px solid #4b4238;
       border-left: none;
       border-radius: 0 8px 8px 0;
     }
-    .shape.phone {
-      width: 30px; height: 44px;
-      background: linear-gradient(180deg, #2c2c2c, #161616);
-      border-radius: 5px;
-      border: 2px solid #3a3a3a;
+    .shape.cup::before {
+      content: '';
+      position: absolute;
+      left: -3px; bottom: -6px;
+      width: 32px; height: 5px;
+      background: linear-gradient(180deg, #3a3229, #241f18);
+      border-radius: 50%;
     }
+    .shape.phone {
+      width: 40px; height: 24px;
+      position: relative;
+      background: linear-gradient(180deg, #2c2c2c, #131313);
+      border-radius: 12px;
+      box-shadow: inset 0 2px 3px rgba(255,255,255,0.06), 0 3px 4px rgba(0,0,0,0.4);
+    }
+    .shape.phone::before, .shape.phone::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      width: 12px; height: 12px;
+      background: radial-gradient(circle at 35% 30%, #3a3a3a, #101010);
+      border-radius: 50%;
+    }
+    .shape.phone::before { left: -2px; }
+    .shape.phone::after { right: -2px; }
     .shape.key {
       width: 32px; height: 14px;
       background: #cbb26a;
@@ -422,6 +517,17 @@
       display: block;
       margin-bottom: 10px;
       filter: sepia(0.25) contrast(1.05);
+    }
+    .suspect-photo-fallback {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #2a2016, #17120c);
+      color: var(--accent);
+      font-family: 'Lora', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
     }
     .suspect-name {
       font-weight: 600;
@@ -653,6 +759,20 @@
       <p class="case-synopsis" id="case-synopsis"></p>
     </div>
 
+    <div class="dossier">
+      <div class="dossier-grid">
+        <div><span class="dossier-label">Case</span><span id="dossier-victim"></span></div>
+        <div><span class="dossier-label">Time</span><span id="dossier-time"></span></div>
+      </div>
+      <p class="dossier-narrative" id="dossier-narrative"></p>
+      <h4>Evidence log</h4>
+      <ul class="dossier-list" id="dossier-evidence"></ul>
+      <h4>Persons of interest</h4>
+      <ul class="dossier-list" id="dossier-suspects"></ul>
+    </div>
+
+    <p class="scene-hint">Or look over the desk and question the suspects directly:</p>
+
     <div class="desk-scene" id="desk-scene">
       <div class="desk-lamp-glow" aria-hidden="true"></div>
       <div class="desk-surface" aria-hidden="true"></div>
@@ -782,6 +902,24 @@
       $('case-title').textContent = caseData.title;
       $('case-synopsis').textContent = caseData.synopsis;
 
+      $('dossier-victim').textContent = caseData.victim || caseData.title;
+      $('dossier-time').textContent = caseData.timeOfIncident || '';
+      $('dossier-narrative').textContent = caseData.narrative || caseData.synopsis;
+
+      const evidenceLog = $('dossier-evidence');
+      caseData.evidence.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${item.name}.</strong> <span>${item.detail}</span>`;
+        evidenceLog.appendChild(li);
+      });
+
+      const suspectLog = $('dossier-suspects');
+      caseData.suspects.forEach(s => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${s.name}</strong> <span>— ${s.role}. ${s.alibi}</span>`;
+        suspectLog.appendChild(li);
+      });
+
       const deskScene = $('desk-scene');
       const positions = [
         { top: '8%', left: '10%' }, { top: '4%', left: '32%' },
@@ -813,8 +951,11 @@
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'suspect-card';
+        const initials = s.name.split(' ').map(w => w[0]).join('').slice(0, 2);
         card.innerHTML = `
-          <img class="suspect-photo" src="${s.photo}" alt="Photo of ${s.name}" loading="lazy" />
+          <img class="suspect-photo" src="${s.photo}" alt="Photo of ${s.name}" loading="lazy"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="suspect-photo suspect-photo-fallback" aria-hidden="true">${initials}</div>
           <div class="suspect-name">${s.name}</div>
           <div class="suspect-role">${s.role}</div>
           <div class="suspect-tag">Person of interest</div>
@@ -837,8 +978,14 @@
         $('detail-body').textContent = body || '';
 
         const photoEl = $('detail-photo');
-        if (photo) { photoEl.src = photo; photoEl.alt = title; photoEl.hidden = false; }
-        else { photoEl.hidden = true; }
+        if (photo) {
+          photoEl.onerror = () => { photoEl.hidden = true; };
+          photoEl.src = photo;
+          photoEl.alt = title;
+          photoEl.hidden = false;
+        } else {
+          photoEl.hidden = true;
+        }
 
         const alibiEl = $('detail-alibi');
         if (alibi) { alibiEl.innerHTML = `<strong>Alibi check:</strong> ${alibi}`; alibiEl.hidden = false; }

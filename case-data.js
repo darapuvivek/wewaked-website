@@ -9,8 +9,12 @@ window.CASES = [
     id: 'blackout-heist',
     title: 'The Blackout Heist',
     location: 'Meridian Trust — Vault Level, 11:47 PM',
+    victim: 'Meridian Trust (institutional loss)',
+    timeOfIncident: '11:41 PM – 11:47 PM',
     synopsis:
       "Power cut out across the block at 11:41 PM. Six minutes later, the vault's ledger of untraceable holdings was gone. No forced entry. Three people had reason to want it gone, and one of them is lying.",
+    narrative:
+      "Meridian's backup generator has a documented six-second delay before it kicks in — a detail that isn't public. Whoever emptied the vault knew that window and used it. No alarms tripped, no locks were forced, and the only card that opened the vault that night had already been reported lost. That makes this an inside job, and it narrows the field to whoever had the access, the motive, and the nerve to move in the dark.",
     evidence: [
       {
         shape: 'folder',
