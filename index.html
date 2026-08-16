@@ -604,38 +604,50 @@
 
     /* ── Auth0 ── */
     (async () => {
-      window.client = await auth0.createAuth0Client({
-        domain: AUTH0_DOMAIN,
-        clientId: AUTH0_CLIENT_ID,
-        authorizationParams: { redirect_uri: location.origin + location.pathname },
-      });
+      const loginBtn = $('btn-login');
+      const logoutBtn = $('btn-logout');
+      const userChip = $('user-chip');
 
-      if (location.search.includes('error=')) {
-        const params = new URLSearchParams(location.search);
-        alert(`Auth error: ${params.get('error_description') || params.get('error')}`);
-        history.replaceState({}, '', location.pathname);
-      }
+      // Show login as a safe default so the button never stays invisible
+      // if Auth0 fails to load (CDN blocked, ad-blocker, network hiccup).
+      setHidden('btn-login', false);
 
-      if (location.search.includes('code=') && location.search.includes('state=')) {
-        await window.client.handleRedirectCallback();
-        history.replaceState({}, '', location.pathname);
-      }
+      try {
+        window.client = await auth0.createAuth0Client({
+          domain: AUTH0_DOMAIN,
+          clientId: AUTH0_CLIENT_ID,
+          authorizationParams: { redirect_uri: location.origin + location.pathname },
+        });
 
-      const isAuth = await window.client.isAuthenticated();
-      setHidden('btn-login', isAuth);
-      setHidden('btn-logout', !isAuth);
-
-      if (isAuth) {
-        const user = await window.client.getUser();
-        userChip.textContent = user.email;
-        setHidden('user-chip', false);
-        if (user.email === ADMIN_EMAIL) {
-          adminSection.hidden = false;
+        if (location.search.includes('error=')) {
+          const params = new URLSearchParams(location.search);
+          alert(`Auth error: ${params.get('error_description') || params.get('error')}`);
+          history.replaceState({}, '', location.pathname);
         }
-      }
 
-      loginBtn.addEventListener('click', () => window.client.loginWithRedirect());
-      logoutBtn.addEventListener('click', () => window.client.logout({ logoutParams: { returnTo: location.origin } }));
+        if (location.search.includes('code=') && location.search.includes('state=')) {
+          await window.client.handleRedirectCallback();
+          history.replaceState({}, '', location.pathname);
+        }
+
+        const isAuth = await window.client.isAuthenticated();
+        setHidden('btn-login', isAuth);
+        setHidden('btn-logout', !isAuth);
+
+        if (isAuth) {
+          const user = await window.client.getUser();
+          userChip.textContent = user.email;
+          setHidden('user-chip', false);
+          if (user.email === ADMIN_EMAIL) {
+            adminSection.hidden = false;
+          }
+        }
+
+        loginBtn.addEventListener('click', () => window.client.loginWithRedirect());
+        logoutBtn.addEventListener('click', () => window.client.logout({ logoutParams: { returnTo: location.origin } }));
+      } catch (err) {
+        console.error('Auth0 failed to initialize:', err);
+      }
     })();
 
     /* ── Admin publish ── */
