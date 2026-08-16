@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wewaked — enter the solar system</title>
-  <meta name="description" content="Wewaked — thoughts, ideas, and stories on everything. Hover the planets to explore." />
-  <meta name="theme-color" content="#05070d" />
+  <title>Wewaked — the case is open</title>
+  <meta name="description" content="Wewaked — thoughts, ideas, and stories on everything. Step into the investigation room and see what doesn't add up." />
+  <meta name="theme-color" content="#0b0906" />
 
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Wewaked" />
   <meta property="og:description" content="Thoughts, ideas, and stories on everything — tech, life, gaming, and whatever feels worth writing about." />
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
@@ -19,13 +19,16 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --border: #232a36;
-      --bg: #05070d;
-      --accent: #f3f4f6;
-      --tag-bg: #101623;
-      --focus-ring: #38bdf8;
+      --text: #ece5d8;
+      --muted: #948a78;
+      --border: #2a2620;
+      --bg: #0b0906;
+      --bg-raised: #14110c;
+      --accent: #e8b04b;
+      --accent-dim: #a97f34;
+      --tag-bg: #17140e;
+      --focus-ring: #e8b04b;
+      --danger: #b3543f;
       color-scheme: dark;
     }
 
@@ -66,12 +69,28 @@
     }
     .skip-link:focus { left: 0; }
 
-    /* ── Starfield ── */
-    #stars {
+    /* ── Dust / grain ── */
+    #dust {
       position: fixed;
       inset: 0;
       z-index: 0;
       display: block;
+    }
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(0,0,0,0.55) 100%);
     }
 
     /* ── Header ── */
@@ -79,7 +98,7 @@
       position: relative;
       z-index: 50;
       border-bottom: 1px solid var(--border);
-      background: rgba(5, 7, 13, 0.6);
+      background: rgba(11, 9, 6, 0.7);
       backdrop-filter: blur(6px);
       padding: 0 24px;
     }
@@ -144,7 +163,7 @@
       font-weight: 600;
       letter-spacing: -1px;
       margin-bottom: 18px;
-      background: linear-gradient(180deg, #fff 0%, #94a3b8 100%);
+      background: linear-gradient(180deg, #fff 0%, #c9a86a 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -162,151 +181,353 @@
       font-family: 'Inter', sans-serif;
       font-size: 0.85rem;
       letter-spacing: 0.04em;
-      color: #64748b;
+      color: #6b6255;
     }
 
-    /* ── Solar system scene ── */
-    .scene {
+    /* ── Investigation room ── */
+    .investigation {
       position: relative;
       z-index: 10;
       max-width: 1200px;
       margin: 0 auto;
-      height: 560px;
-      padding: 0 24px;
+      padding: 0 24px 24px;
     }
-    .orbit {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 420px;
-      height: 420px;
-      transform: translate(-50%, -50%);
-      border: 1px dashed rgba(148, 163, 184, 0.18);
-      border-radius: 50%;
-      pointer-events: none;
+    .case-intro {
+      max-width: 720px;
+      margin: 0 auto 40px;
+      text-align: center;
     }
-    .sun {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 64px;
-      height: 64px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #fff7d6 0%, #ffe08a 35%, #f59e0b 75%, #b45309 100%);
-      box-shadow: 0 0 60px 22px rgba(251, 191, 36, 0.45), 0 0 140px 60px rgba(251, 191, 36, 0.18);
-      animation: pulse 4s ease-in-out infinite;
-      z-index: 1;
+    .case-intro .case-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.9rem);
+      font-weight: 600;
+      margin-bottom: 6px;
     }
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 50px 18px rgba(251, 191, 36, 0.4), 0 0 130px 55px rgba(251, 191, 36, 0.15); }
-      50% { box-shadow: 0 0 70px 30px rgba(251, 191, 36, 0.5), 0 0 150px 65px rgba(251, 191, 36, 0.2); }
+    .case-intro .case-location {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-dim);
+      margin-bottom: 14px;
+    }
+    .case-intro .case-synopsis {
+      color: var(--muted);
+      font-family: 'Lora', serif;
+      line-height: 1.75;
     }
 
-    .planet {
+    .desk-scene {
+      position: relative;
+      height: 460px;
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(232, 176, 75, 0.16), transparent 65%),
+        linear-gradient(180deg, #1c1108 0%, #150d07 55%, #0e0a05 100%);
+      border: 1px solid var(--border);
+    }
+    .desk-surface {
       position: absolute;
-      z-index: 5;
+      left: 0; right: 0; bottom: 0;
+      height: 46%;
+      background:
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0 2px, transparent 2px 42px),
+        linear-gradient(180deg, #3a2415 0%, #2a1a0f 100%);
+      box-shadow: inset 0 12px 24px rgba(0,0,0,0.5);
+    }
+    .desk-surface::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 80% at 50% 0%, rgba(232, 176, 75, 0.14), transparent 70%);
+    }
+
+    .desk-item {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
       cursor: pointer;
-      transition: transform 0.2s ease;
-      user-select: none;
+      font-family: 'Inter', sans-serif;
+      color: var(--muted);
+      transition: transform 0.15s ease;
     }
-    .planet:hover { transform: scale(1.15); }
-    .planet .ball {
-      border-radius: 50%;
-      margin: 0 auto;
-    }
-    .planet .name {
-      display: block;
-      text-align: center;
-      margin-top: 8px;
-      font-size: 0.78rem;
+    .desk-item:hover, .desk-item:focus-visible { transform: translateY(-4px) scale(1.06); color: var(--text); }
+    .desk-item .item-label {
+      font-size: 0.68rem;
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--muted);
-      transition: color 0.15s;
+      white-space: nowrap;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.8);
     }
-    .planet:hover .name { color: var(--text); }
-
-    .mercury .ball {
-      width: 26px; height: 26px;
-      background: radial-gradient(circle at 35% 35%, #d6d3d1 0%, #78716c 60%, #44403c 100%);
+    .shape {
+      display: block;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5));
     }
-    .venus .ball {
-      width: 40px; height: 40px;
-      background: radial-gradient(circle at 35% 35%, #fef3c7 0%, #fbbf24 55%, #b45309 100%);
+    .shape.folder {
+      width: 46px; height: 34px;
+      background: linear-gradient(180deg, #c99a4e, #a97a34);
+      border-radius: 2px 6px 2px 2px;
+      position: relative;
     }
-    .earth .ball {
-      width: 44px; height: 44px;
-      background: radial-gradient(circle at 30% 30%, #7dd3fc 0%, #3b82f6 45%, #16a34a 75%, #1e3a8a 100%);
-      box-shadow: inset -8px -8px 18px rgba(0, 0, 0, 0.45);
-    }
-    .mars .ball {
-      width: 36px; height: 36px;
-      background: radial-gradient(circle at 35% 35%, #fca5a5 0%, #ef4444 55%, #991b1b 100%);
-    }
-    .jupiter .ball {
-      width: 84px; height: 84px;
-      background:
-        radial-gradient(circle at 30% 30%, #fde68a 0%, #fbbf24 30%, #d97706 60%, #92400e 100%),
-        linear-gradient(180deg, #fcd34d 0%, #d97706 18%, #fef3c7 24%, #b45309 40%, #fde68a 48%, #92400e 66%, #fbbf24 82%, #78350f 100%);
-      background-blend-mode: normal;
-      box-shadow: inset -10px -10px 20px rgba(0, 0, 0, 0.5);
-    }
-    .saturn .ball {
-      width: 74px; height: 74px;
-      background: radial-gradient(circle at 35% 35%, #fef9c3 0%, #fde047 45%, #ca8a04 100%);
-    }
-    .saturn .ring {
+    .shape.folder::before {
+      content: '';
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 118px;
-      height: 34px;
-      transform: translate(-50%, -50%) rotate(-18deg);
+      top: -8px; left: 0;
+      width: 22px; height: 8px;
+      background: inherit;
+      border-radius: 4px 4px 0 0;
+    }
+    .shape.magnifier {
+      width: 30px; height: 30px;
+      border: 5px solid #cbd0d6;
       border-radius: 50%;
-      border: 6px solid rgba(226, 190, 106, 0.75);
-      border-top-color: rgba(226, 190, 106, 0.25);
-      border-bottom-color: rgba(226, 190, 106, 0.25);
+      position: relative;
+      background: rgba(200, 220, 235, 0.08);
     }
-    .uranus .ball {
-      width: 56px; height: 56px;
-      background: radial-gradient(circle at 35% 35%, #a5f3fc 0%, #22d3ee 55%, #0e7490 100%);
+    .shape.magnifier::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 4px;
+      background: #cbd0d6;
+      bottom: -12px; right: -10px;
+      transform: rotate(45deg);
+      border-radius: 2px;
     }
-    .neptune .ball {
-      width: 56px; height: 56px;
-      background: radial-gradient(circle at 35% 35%, #93c5fd 0%, #2563eb 55%, #1e3a8a 100%);
+    .shape.photo {
+      width: 40px; height: 48px;
+      background: #eee5d2;
+      padding: 3px;
+      transform: rotate(-6deg);
+    }
+    .shape.photo::before {
+      content: '';
+      display: block;
+      width: 100%; height: 70%;
+      background: linear-gradient(135deg, #2b2f38, #4a5568);
+    }
+    .shape.notepad {
+      width: 34px; height: 44px;
+      background: #e9e2cf;
+      border-radius: 2px;
+      background-image: repeating-linear-gradient(180deg, transparent 0 7px, rgba(0,0,0,0.12) 7px 8px);
+    }
+    .shape.cup {
+      width: 26px; height: 26px;
+      background: linear-gradient(180deg, #4b4238, #2e2822);
+      border-radius: 0 0 10px 10px;
+      position: relative;
+    }
+    .shape.cup::after {
+      content: '';
+      position: absolute;
+      right: -10px; top: 4px;
+      width: 10px; height: 12px;
+      border: 3px solid #4b4238;
+      border-left: none;
+      border-radius: 0 8px 8px 0;
+    }
+    .shape.phone {
+      width: 30px; height: 44px;
+      background: linear-gradient(180deg, #2c2c2c, #161616);
+      border-radius: 5px;
+      border: 2px solid #3a3a3a;
+    }
+    .shape.key {
+      width: 32px; height: 14px;
+      background: #cbb26a;
+      border-radius: 7px 2px 2px 7px;
+      position: relative;
+    }
+    .shape.key::before {
+      content: '';
+      position: absolute;
+      right: -8px; top: -4px;
+      width: 14px; height: 14px;
+      border: 3px solid #cbb26a;
+      border-radius: 50%;
     }
 
-    /* ── Fact tooltip ── */
-    #fact {
+    .desk-lamp-glow {
+      position: absolute;
+      top: -60px; left: 50%;
+      width: 420px; height: 420px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(232, 176, 75, 0.22), transparent 65%);
+      pointer-events: none;
+    }
+
+    /* ── Evidence board ── */
+    .evidence-board {
+      margin-top: 28px;
+      padding: 24px;
+      border-radius: 16px;
+      background:
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 40px),
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 40px),
+        linear-gradient(180deg, #241a10 0%, #1a130c 100%);
+      border: 1px solid var(--border);
+    }
+    .evidence-board h3 {
+      font-family: 'Lora', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent-dim);
+      margin-bottom: 16px;
+    }
+    .suspect-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 18px;
+    }
+    .suspect-card {
+      position: relative;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      transform: rotate(-1deg);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .suspect-card:nth-child(even) { transform: rotate(1.2deg); }
+    .suspect-card:hover, .suspect-card:focus-visible {
+      transform: rotate(0deg) translateY(-3px);
+      border-color: var(--accent-dim);
+    }
+    .suspect-card::before {
+      content: '';
+      position: absolute;
+      top: -6px; left: 50%;
+      width: 12px; height: 12px;
+      transform: translateX(-50%);
+      background: var(--danger);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .suspect-photo {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
+      margin-bottom: 10px;
+      filter: sepia(0.25) contrast(1.05);
+    }
+    .suspect-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .suspect-role {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .suspect-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--danger);
+    }
+
+    /* ── Detail panel ── */
+    #detail-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(0,0,0,0.6);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    #detail-overlay.show { opacity: 1; pointer-events: auto; }
+    #detail-panel {
       position: fixed;
       z-index: 100;
-      max-width: 320px;
-      pointer-events: none;
-      background: rgba(10, 14, 22, 0.92);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      opacity: 0;
-      transform: translateY(6px) scale(0.98);
-      transition: opacity 0.15s ease, transform 0.15s ease;
+      top: 0; right: 0;
+      height: 100%;
+      width: min(420px, 100%);
+      background: var(--bg-raised);
+      border-left: 1px solid var(--border);
+      padding: 28px 24px;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      overflow-y: auto;
     }
-    #fact.show { opacity: 1; transform: translateY(0) scale(1); }
-    #fact .fact-planet {
+    #detail-panel.show { transform: translateX(0); }
+    #detail-close {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-bottom: 20px;
+    }
+    #detail-close:hover { color: var(--text); border-color: var(--accent-dim); }
+    #detail-photo {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      filter: sepia(0.25) contrast(1.05);
+    }
+    #detail-eyebrow {
       font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--focus-ring);
+      color: var(--accent);
       margin-bottom: 6px;
     }
-    #fact .fact-text {
-      font-size: 0.9rem;
-      color: var(--text);
-      line-height: 1.55;
+    #detail-title {
+      font-family: 'Lora', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 4px;
     }
+    #detail-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    #detail-body {
+      font-family: 'Lora', serif;
+      line-height: 1.75;
+      color: var(--text);
+    }
+    #detail-alibi {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    #detail-alibi strong { color: var(--text); }
+    .suspicion-meter {
+      display: flex;
+      gap: 4px;
+      margin-top: 12px;
+    }
+    .suspicion-meter span {
+      flex: 1;
+      height: 5px;
+      border-radius: 3px;
+      background: var(--border);
+    }
+    .suspicion-meter span.filled { background: var(--danger); }
 
     /* ── About ── */
     .about {
@@ -400,7 +621,9 @@
 </head>
 <body>
 
-  <canvas id="stars" aria-hidden="true"></canvas>
+  <canvas id="dust" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
 
   <a class="skip-link" href="#content">Skip to content</a>
 
@@ -408,7 +631,7 @@
     <div class="header-inner">
       <a href="/" class="logo">Wewaked</a>
       <nav aria-label="Primary">
-        <a href="#scene">System</a>
+        <a href="#investigation">Case</a>
         <a href="#about">About</a>
         <span id="user-chip" class="user-chip" hidden></span>
         <button id="btn-login" class="nav-btn" type="button" hidden>Login</button>
@@ -418,54 +641,40 @@
   </header>
 
   <section class="hero">
-    <h1>You're entering the Wewaked system</h1>
-    <p>Thoughts, ideas, and stories on everything — tech, life, gaming, and whatever feels worth writing about. Before you land, take a spin around the neighbourhood.</p>
-    <p class="hint">Hover over a planet for a fact — there are 100 hidden on each world.</p>
+    <h1>The case is open.</h1>
+    <p>A blog, sometimes. A mystery, always. Step into the room, look over the desk, and see what doesn't add up.</p>
+    <p class="hint">Click the evidence. Question the suspects.</p>
   </section>
 
-  <main id="scene" class="scene">
-    <div class="orbit" aria-hidden="true"></div>
-    <div class="sun" aria-hidden="true"></div>
-
-    <div class="planet mercury" data-planet="mercury" tabindex="0" style="top:8%;left:4%;">
-      <div class="ball"></div>
-      <span class="name">Mercury</span>
-    </div>
-    <div class="planet venus" data-planet="venus" tabindex="0" style="top:26%;left:12%;">
-      <div class="ball"></div>
-      <span class="name">Venus</span>
-    </div>
-    <div class="planet earth" data-planet="earth" tabindex="0" style="top:48%;left:4%;">
-      <div class="ball"></div>
-      <span class="name">Earth</span>
-    </div>
-    <div class="planet mars" data-planet="mars" tabindex="0" style="top:70%;left:12%;">
-      <div class="ball"></div>
-      <span class="name">Mars</span>
+  <main id="investigation" class="investigation">
+    <div class="case-intro">
+      <div class="case-location" id="case-location"></div>
+      <h2 class="case-title" id="case-title"></h2>
+      <p class="case-synopsis" id="case-synopsis"></p>
     </div>
 
-    <div class="planet jupiter" data-planet="jupiter" tabindex="0" style="top:6%;right:3%;">
-      <div class="ball"></div>
-      <span class="name">Jupiter</span>
+    <div class="desk-scene" id="desk-scene">
+      <div class="desk-lamp-glow" aria-hidden="true"></div>
+      <div class="desk-surface" aria-hidden="true"></div>
     </div>
-    <div class="planet saturn" data-planet="saturn" tabindex="0" style="top:26%;right:10%;">
-      <div class="ball"></div>
-      <span class="name">Saturn</span>
-    </div>
-    <div class="planet uranus" data-planet="uranus" tabindex="0" style="top:50%;right:4%;">
-      <div class="ball"></div>
-      <span class="name">Uranus</span>
-    </div>
-    <div class="planet neptune" data-planet="neptune" tabindex="0" style="top:72%;right:10%;">
-      <div class="ball"></div>
-      <span class="name">Neptune</span>
+
+    <div class="evidence-board">
+      <h3>Persons of Interest</h3>
+      <div class="suspect-grid" id="suspect-grid"></div>
     </div>
   </main>
 
-  <div id="fact" role="status" aria-live="polite">
-    <div class="fact-planet" id="fact-planet"></div>
-    <div class="fact-text" id="fact-text"></div>
-  </div>
+  <div id="detail-overlay"></div>
+  <aside id="detail-panel" role="dialog" aria-labelledby="detail-title" aria-hidden="true">
+    <button id="detail-close" type="button">← Close</button>
+    <img id="detail-photo" hidden alt="" />
+    <div id="detail-eyebrow"></div>
+    <h3 id="detail-title"></h3>
+    <p id="detail-sub"></p>
+    <div id="detail-body"></div>
+    <div id="detail-alibi" hidden></div>
+    <div class="suspicion-meter" id="detail-suspicion" hidden></div>
+  </aside>
 
   <section class="about" id="about">
     <h2>About</h2>
@@ -508,7 +717,7 @@
     </div>
   </footer>
 
-  <script src="facts.js"></script>
+  <script src="case-data.js"></script>
   <script src="https://cdn.auth0.com/js/auth0-spa-js/2.18/auth0-spa-js.production.js"></script>
   <script>
     const ADMIN_EMAIL = 'darapu777@gmail.com';
@@ -519,88 +728,141 @@
     const $ = id => document.getElementById(id);
     const setHidden = (id, hidden) => { $(id).hidden = hidden; };
 
-    /* ── Starfield ── */
+    /* ── Dust motes ── */
     (() => {
-      const canvas = $('stars');
+      const canvas = $('dust');
       const ctx = canvas.getContext('2d');
-      let stars = [];
-      const STAR_COUNT = Math.min(300, Math.max(120, Math.floor(window.innerWidth / 5)));
+      let motes = [];
+      const MOTE_COUNT = Math.min(140, Math.max(60, Math.floor(window.innerWidth / 10)));
 
       function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
       }
-      function spawnStars() {
-        stars = Array.from({ length: STAR_COUNT }, () => ({
+      function spawnMotes() {
+        motes = Array.from({ length: MOTE_COUNT }, () => ({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          r: Math.random() * 1.4 + 0.3,
+          r: Math.random() * 1.3 + 0.3,
           tw: Math.random() * Math.PI * 2,
-          speed: Math.random() * 0.03 + 0.005,
-          drift: Math.random() * 0.08 + 0.01,
+          speed: Math.random() * 0.02 + 0.004,
+          fall: Math.random() * 0.12 + 0.02,
+          drift: Math.random() * 0.08 - 0.04,
         }));
       }
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (const s of stars) {
-          s.tw += s.speed;
-          s.x -= s.drift * 0.15;
-          if (s.x < -2) s.x = canvas.width + 2;
-          const alpha = 0.35 + 0.65 * Math.abs(Math.sin(s.tw));
+        for (const m of motes) {
+          m.tw += m.speed;
+          m.y += m.fall;
+          m.x += m.drift;
+          if (m.y > canvas.height + 2) m.y = -2;
+          if (m.x < -2) m.x = canvas.width + 2;
+          if (m.x > canvas.width + 2) m.x = -2;
+          const alpha = 0.15 + 0.35 * Math.abs(Math.sin(m.tw));
           ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(226, 232, 240, ${alpha})`;
+          ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(232, 176, 75, ${alpha})`;
           ctx.fill();
         }
         requestAnimationFrame(draw);
       }
-      window.addEventListener('resize', () => { resize(); spawnStars(); });
+      window.addEventListener('resize', () => { resize(); spawnMotes(); });
       resize();
-      spawnStars();
+      spawnMotes();
       draw();
     })();
 
-    /* ── Planet facts ── */
+    /* ── Investigation room ── */
     (() => {
-      const factBox = $('fact');
-      const factPlanet = $('fact-planet');
-      const factText = $('fact-text');
-      let lastIndex = {};
+      const caseData = window.ACTIVE_CASE;
+      if (!caseData) return;
 
-      function showFact(name, x, y) {
-        const list = window.PLANET_FACTS[name];
-        let idx;
-        do {
-          idx = Math.floor(Math.random() * list.length);
-        } while (list.length > 1 && idx === lastIndex[name]);
-        lastIndex[name] = idx;
-        factPlanet.textContent = name;
-        factText.textContent = list[idx];
-        factBox.classList.add('show');
-        moveFact(x, y);
-      }
-      function moveFact(x, y) {
-        const pad = 16;
-        const box = factBox.getBoundingClientRect();
-        let left = x + 18;
-        let top = y + 18;
-        if (left + box.width + pad > window.innerWidth) left = x - box.width - 18;
-        if (top + box.height + pad > window.innerHeight) top = window.innerHeight - box.height - pad;
-        factBox.style.left = left + 'px';
-        factBox.style.top = top + 'px';
-      }
+      $('case-location').textContent = caseData.location;
+      $('case-title').textContent = caseData.title;
+      $('case-synopsis').textContent = caseData.synopsis;
 
-      document.querySelectorAll('.planet').forEach(p => {
-        p.addEventListener('mousemove', e => {
-          showFact(p.dataset.planet, e.clientX, e.clientY);
-        });
-        p.addEventListener('mouseleave', () => factBox.classList.remove('show'));
-        p.addEventListener('focus', () => {
-          const r = p.getBoundingClientRect();
-          showFact(p.dataset.planet, r.left + r.width / 2, r.top);
-        });
-        p.addEventListener('blur', () => factBox.classList.remove('show'));
+      const deskScene = $('desk-scene');
+      const positions = [
+        { top: '8%', left: '10%' }, { top: '4%', left: '32%' },
+        { top: '10%', right: '30%' }, { top: '4%', right: '10%' },
+        { top: '30%', left: '20%' }, { top: '28%', right: '18%' },
+        { top: '32%', left: '48%' },
+      ];
+
+      caseData.evidence.forEach((item, i) => {
+        const pos = positions[i % positions.length];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'desk-item';
+        btn.style.top = pos.top;
+        if (pos.left) btn.style.left = pos.left;
+        if (pos.right) btn.style.right = pos.right;
+        btn.innerHTML = `<span class="shape ${item.shape}" aria-hidden="true"></span><span class="item-label">${item.name}</span>`;
+        btn.addEventListener('click', () => openDetail({
+          eyebrow: 'Evidence',
+          title: item.name,
+          sub: '',
+          body: item.detail,
+        }));
+        deskScene.appendChild(btn);
       });
+
+      const suspectGrid = $('suspect-grid');
+      caseData.suspects.forEach(s => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'suspect-card';
+        card.innerHTML = `
+          <img class="suspect-photo" src="${s.photo}" alt="Photo of ${s.name}" loading="lazy" />
+          <div class="suspect-name">${s.name}</div>
+          <div class="suspect-role">${s.role}</div>
+          <div class="suspect-tag">Person of interest</div>
+        `;
+        card.addEventListener('click', () => openDetail({
+          eyebrow: s.role,
+          title: s.name,
+          photo: s.photo,
+          body: s.statement,
+          alibi: s.alibi,
+          suspicion: s.suspicion,
+        }));
+        suspectGrid.appendChild(card);
+      });
+
+      function openDetail({ eyebrow, title, sub, body, photo, alibi, suspicion }) {
+        $('detail-eyebrow').textContent = eyebrow || '';
+        $('detail-title').textContent = title || '';
+        $('detail-sub').textContent = sub || '';
+        $('detail-body').textContent = body || '';
+
+        const photoEl = $('detail-photo');
+        if (photo) { photoEl.src = photo; photoEl.alt = title; photoEl.hidden = false; }
+        else { photoEl.hidden = true; }
+
+        const alibiEl = $('detail-alibi');
+        if (alibi) { alibiEl.innerHTML = `<strong>Alibi check:</strong> ${alibi}`; alibiEl.hidden = false; }
+        else { alibiEl.hidden = true; }
+
+        const meterEl = $('detail-suspicion');
+        if (suspicion) {
+          meterEl.innerHTML = Array.from({ length: 5 }, (_, i) =>
+            `<span class="${i < suspicion ? 'filled' : ''}"></span>`).join('');
+          meterEl.hidden = false;
+        } else { meterEl.hidden = true; }
+
+        $('detail-panel').classList.add('show');
+        $('detail-panel').setAttribute('aria-hidden', 'false');
+        $('detail-overlay').classList.add('show');
+      }
+      function closeDetail() {
+        $('detail-panel').classList.remove('show');
+        $('detail-panel').setAttribute('aria-hidden', 'true');
+        $('detail-overlay').classList.remove('show');
+      }
+      $('detail-close').addEventListener('click', closeDetail);
+      $('detail-overlay').addEventListener('click', closeDetail);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
     })();
 
     /* ── Auth0 ── */
