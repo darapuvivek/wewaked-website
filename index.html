@@ -108,6 +108,26 @@
       transition: color 0.15s;
     }
     nav[aria-label] a:hover { color: var(--text); }
+    .nav-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 14px;
+      margin-left: 24px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .nav-btn:hover { background: var(--border); }
+    .user-chip {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 24px;
+      white-space: nowrap;
+    }
 
     /* ── Hero ── */
     .hero {
@@ -200,6 +220,53 @@
       max-width: 520px;
     }
 
+    /* ── Admin ── */
+    .admin {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 56px 24px 0;
+    }
+    .admin h2 {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.5rem);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .admin form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 520px;
+    }
+    .admin label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .admin input, .admin textarea {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.925rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .admin textarea { min-height: 120px; resize: vertical; }
+    .admin input:focus-visible, .admin textarea:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 1px;
+    }
+    .admin .nav-btn { margin-left: 0; }
+    .admin-status {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
     /* ── Footer ── */
     footer {
       max-width: 720px;
@@ -234,6 +301,9 @@
       <nav aria-label="Primary">
         <a href="#articles">Articles</a>
         <a href="#about">About</a>
+        <span id="user-chip" class="user-chip" hidden></span>
+        <button id="btn-login" class="nav-btn" type="button" hidden>Login</button>
+        <button id="btn-logout" class="nav-btn" type="button" hidden>Logout</button>
       </nav>
     </div>
   </header>
@@ -293,6 +363,34 @@
     <p>Wewaked is a personal blog about tech, life, and gaming. Written by one person, at odd hours, about whatever feels worth writing about.</p>
   </section>
 
+  <section class="admin" id="admin" hidden>
+    <h2>Admin</h2>
+    <form id="admin-form">
+      <label>GitHub token
+        <input id="post-token" type="password" placeholder="Personal access token (repo scope)" autocomplete="off" />
+      </label>
+      <label>Tag
+        <input id="post-tag" type="text" list="tags" placeholder="e.g. Tech" required />
+      </label>
+      <datalist id="tags">
+        <option value="Tech"></option>
+        <option value="Gaming"></option>
+        <option value="Life"></option>
+      </datalist>
+      <label>Date
+        <input id="post-date" type="date" required />
+      </label>
+      <label>Title
+        <input id="post-title" type="text" placeholder="Post title" required />
+      </label>
+      <label>Excerpt
+        <textarea id="post-excerpt" placeholder="Short summary shown on the homepage" required></textarea>
+      </label>
+      <button class="nav-btn" type="submit">Publish post</button>
+      <p class="admin-status" id="admin-status"></p>
+    </form>
+  </section>
+
   <footer>
     <span>© 2026 Wewaked</span>
     <div class="footer-links">
@@ -301,6 +399,112 @@
       <a href="/feed.xml">RSS</a>
     </div>
   </footer>
+
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.18/auth0-spa-js.production.js"></script>
+  <script>
+    const ADMIN_EMAIL = 'darapu777@gmail.com';
+    const REPO = 'darapuvivek/wewaked-website';
+    const AUTH0_DOMAIN = 'dev-efi5czbtjnr634yb.us.auth0.com';
+    const AUTH0_CLIENT_ID = 'QqcwVFTUfFIDvOkXKLmwAkFFUBu20LOZ';
+
+    const $ = id => document.getElementById(id);
+    const setHidden = (id, hidden) => { $(id).hidden = hidden; };
+
+    const loginBtn = $('btn-login');
+    const logoutBtn = $('btn-logout');
+    const userChip = $('user-chip');
+    const adminSection = $('admin');
+
+    const b64ToUtf8 = b64 => decodeURIComponent(escape(atob(b64)));
+    const utf8ToB64 = str => btoa(unescape(encodeURIComponent(str)));
+    const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    function formatDate(iso) {
+      const d = new Date(iso + 'T12:00:00');
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    (async () => {
+      window.client = await auth0.createAuth0Client({
+        domain: AUTH0_DOMAIN,
+        clientId: AUTH0_CLIENT_ID,
+        authorizationParams: { redirect_uri: location.origin + location.pathname },
+      });
+
+      if (location.search.includes('error=')) {
+        const params = new URLSearchParams(location.search);
+        alert(`Auth error: ${params.get('error_description') || params.get('error')}`);
+        history.replaceState({}, '', location.pathname);
+      }
+
+      if (location.search.includes('code=') && location.search.includes('state=')) {
+        await window.client.handleRedirectCallback();
+        history.replaceState({}, '', location.pathname);
+      }
+
+      const isAuth = await window.client.isAuthenticated();
+      setHidden('btn-login', isAuth);
+      setHidden('btn-logout', !isAuth);
+
+      if (isAuth) {
+        const user = await window.client.getUser();
+        userChip.textContent = user.email;
+        setHidden('user-chip', false);
+
+        if (user.email === ADMIN_EMAIL) {
+          adminSection.hidden = false;
+        }
+      }
+
+      loginBtn.addEventListener('click', () => window.client.loginWithRedirect());
+      logoutBtn.addEventListener('click', () => window.client.logout({ logoutParams: { returnTo: location.origin } }));
+    })();
+
+    $('admin-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const status = $('admin-status');
+      const tag = $('post-tag').value.trim();
+      const date = $('post-date').value;
+      const title = $('post-title').value.trim();
+      const excerpt = $('post-excerpt').value.trim();
+
+      if (!date) { status.textContent = 'Pick a date.'; return; }
+
+      status.textContent = 'Publishing…';
+      const token = $('post-token').value.trim();
+      if (!token) { status.textContent = 'Enter your GitHub token (repo scope).'; return; }
+      const headers = { Accept: 'application/vnd.github+json', Authorization: `token ${token}` };
+      const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/index.html`, { headers });
+      if (!getRes.ok) { status.textContent = 'Could not read repo — is it public?'; return; }
+      const file = await getRes.json();
+      const html = b64ToUtf8(file.content);
+
+      const article = `
+    <article class="post-item">
+      <div class="post-meta">
+        <span class="post-tag">${tag}</span>
+        <time class="post-date" datetime="${date}">${formatDate(date)}</time>
+      </div>
+      <h3 class="post-title"><a href="/posts/${slugify(title)}">${title}</a></h3>
+      <p class="post-excerpt">${excerpt}</p>
+      <a class="read-more" href="/posts/${slugify(title)}">Read more</a>
+    </article>
+  `;
+
+      const updated = html.replace('</main>', article.trim() + '\n\n  </main>');
+      const putRes = await fetch(`https://api.github.com/repos/${REPO}/contents/index.html`, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Add post: ${title}`,
+          content: utf8ToB64(updated),
+          sha: file.sha,
+        }),
+      });
+
+      status.textContent = putRes.ok ? 'Published! The site will update shortly.' : `Publish failed (${putRes.status}).`;
+    });
+  </script>
 
 </body>
 </html>
