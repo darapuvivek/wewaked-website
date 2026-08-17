@@ -2,7 +2,8 @@
  * Investigation room content. Add more cases, evidence, or suspects here —
  * the page renders whatever is in ACTIVE_CASE without needing HTML/CSS changes.
  * Evidence "shape" must be one of: folder, magnifier, photo, notepad, cup, phone, key.
- * Suspect "photo" uses i.pravatar.cc seeded portraits (swap for real images anytime).
+ * Suspects are drawn as animated SVG portraits (built entirely in code, no
+ * external images) — customize their look via the "avatar" trait object.
  */
 window.CASES = [
   {
@@ -55,7 +56,7 @@ window.CASES = [
     ],
     suspects: [
       {
-        photo: 'https://i.pravatar.cc/300?img=13',
+        avatar: { skin: '#c98f65', hair: '#2b2420', hairStyle: 'short', clothing: '#2f3b47', clothingType: 'uniform', expression: 'stern' },
         name: 'Marcus Feld',
         role: 'Night Security Guard',
         suspicion: 4,
@@ -65,7 +66,7 @@ window.CASES = [
           "Claims he never left the desk — but the cold coffee says otherwise, and the boot print matches his patrol boots.",
       },
       {
-        photo: 'https://i.pravatar.cc/300?img=47',
+        avatar: { skin: '#e8c39e', hair: '#7a4a2b', hairStyle: 'bob', clothing: '#5c2b34', clothingType: 'blazer', expression: 'sharp' },
         name: 'Renata Cole',
         role: 'Senior Accountant',
         suspicion: 5,
@@ -75,7 +76,7 @@ window.CASES = [
           "Says she was home, but her badge shows her swiping into the building at 10:58 PM — she never mentioned coming in that night.",
       },
       {
-        photo: 'https://i.pravatar.cc/300?img=32',
+        avatar: { skin: '#d9a86c', hair: '#181614', hairStyle: 'slick', clothing: '#3a3226', clothingType: 'blazer', expression: 'nervous' },
         name: 'Julian Voss',
         role: 'Client Relations, VIP Desk',
         suspicion: 3,

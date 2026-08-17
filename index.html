@@ -288,6 +288,21 @@
         radial-gradient(ellipse 60% 50% at 50% 0%, rgba(232, 176, 75, 0.16), transparent 65%),
         linear-gradient(180deg, #1c1108 0%, #150d07 55%, #0e0a05 100%);
       border: 1px solid var(--border);
+      perspective: 1000px;
+    }
+    .desk-tilt {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transition: transform 0.2s ease-out;
+      will-change: transform;
+    }
+    @keyframes item-float {
+      0%, 100% { transform: translateZ(20px) translateY(0); }
+      50% { transform: translateZ(20px) translateY(-1.5px); }
+    }
+    .desk-item {
+      animation: item-float 7s ease-in-out infinite;
     }
     .desk-surface {
       position: absolute;
@@ -318,7 +333,7 @@
       color: var(--muted);
       transition: transform 0.15s ease;
     }
-    .desk-item:hover, .desk-item:focus-visible { transform: translateY(-4px) scale(1.06); color: var(--text); }
+    .desk-item:hover, .desk-item:focus-visible { transform: translateZ(20px) translateY(-4px) scale(1.1); color: var(--text); animation-play-state: paused; }
     .desk-item .item-label {
       font-size: 0.68rem;
       font-weight: 600;
@@ -509,25 +524,26 @@
       border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
-    .suspect-photo {
+    .suspect-portrait {
       width: 100%;
       aspect-ratio: 1;
-      object-fit: cover;
       border-radius: 6px;
       display: block;
       margin-bottom: 10px;
-      filter: sepia(0.25) contrast(1.05);
+      overflow: hidden;
+      background: linear-gradient(160deg, #241a10, #150e08);
+      box-shadow: inset 0 0 24px rgba(0,0,0,0.5);
     }
-    .suspect-photo-fallback {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(160deg, #2a2016, #17120c);
-      color: var(--accent);
-      font-family: 'Lora', serif;
-      font-size: 1.6rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+    .suspect-portrait svg { width: 100%; height: 100%; display: block; }
+    .portrait-sway { transform-origin: 50% 100%; animation: portrait-sway 6s ease-in-out infinite; }
+    .portrait-eyelid { transform-box: fill-box; transform-origin: center; animation: portrait-blink 5.2s ease-in-out infinite; }
+    @keyframes portrait-sway {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-1.2px) rotate(0.5deg); }
+    }
+    @keyframes portrait-blink {
+      0%, 92%, 100% { transform: scaleY(0.05); }
+      95%, 97% { transform: scaleY(1); }
     }
     .suspect-name {
       font-weight: 600;
@@ -586,10 +602,13 @@
     #detail-close:hover { color: var(--text); border-color: var(--accent-dim); }
     #detail-photo {
       width: 100%;
+      aspect-ratio: 1;
       border-radius: 10px;
       margin-bottom: 16px;
-      filter: sepia(0.25) contrast(1.05);
+      overflow: hidden;
+      background: linear-gradient(160deg, #241a10, #150e08);
     }
+    #detail-photo svg { width: 100%; height: 100%; display: block; }
     #detail-eyebrow {
       font-size: 0.72rem;
       font-weight: 700;
@@ -774,8 +793,10 @@
     <p class="scene-hint">Or look over the desk and question the suspects directly:</p>
 
     <div class="desk-scene" id="desk-scene">
-      <div class="desk-lamp-glow" aria-hidden="true"></div>
-      <div class="desk-surface" aria-hidden="true"></div>
+      <div class="desk-tilt" id="desk-tilt">
+        <div class="desk-lamp-glow" aria-hidden="true"></div>
+        <div class="desk-surface" aria-hidden="true"></div>
+      </div>
     </div>
 
     <div class="evidence-board">
@@ -787,7 +808,7 @@
   <div id="detail-overlay"></div>
   <aside id="detail-panel" role="dialog" aria-labelledby="detail-title" aria-hidden="true">
     <button id="detail-close" type="button">← Close</button>
-    <img id="detail-photo" hidden alt="" />
+    <div id="detail-photo" hidden></div>
     <div id="detail-eyebrow"></div>
     <h3 id="detail-title"></h3>
     <p id="detail-sub"></p>
@@ -921,6 +942,7 @@
       });
 
       const deskScene = $('desk-scene');
+      const deskTilt = $('desk-tilt');
       const positions = [
         { top: '8%', left: '10%' }, { top: '4%', left: '32%' },
         { top: '10%', right: '30%' }, { top: '4%', right: '10%' },
@@ -936,6 +958,7 @@
         btn.style.top = pos.top;
         if (pos.left) btn.style.left = pos.left;
         if (pos.right) btn.style.right = pos.right;
+        btn.style.animationDelay = `${(i * 0.35).toFixed(2)}s`;
         btn.innerHTML = `<span class="shape ${item.shape}" aria-hidden="true"></span><span class="item-label">${item.name}</span>`;
         btn.addEventListener('click', () => openDetail({
           eyebrow: 'Evidence',
@@ -943,19 +966,84 @@
           sub: '',
           body: item.detail,
         }));
-        deskScene.appendChild(btn);
+        deskTilt.appendChild(btn);
       });
 
+      // 3D parallax tilt: the desk surface tracks the cursor for a sense of depth.
+      deskScene.addEventListener('pointermove', e => {
+        const rect = deskScene.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width - 0.5;
+        const py = (e.clientY - rect.top) / rect.height - 0.5;
+        deskTilt.style.transform = `rotateX(${(-py * 8).toFixed(2)}deg) rotateY(${(px * 10).toFixed(2)}deg)`;
+      });
+      deskScene.addEventListener('pointerleave', () => {
+        deskTilt.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      });
+
+      // Animated vector portraits — built entirely in SVG/CSS, no external
+      // images. "delay" staggers each character's blink so they don't
+      // all blink in sync.
+      function buildPortraitSVG(avatar, delay) {
+        const { skin, hair, hairStyle, clothing, clothingType, expression } = avatar;
+
+        const hairShapes = {
+          short: `<path d="M31,30 Q32,12 50,11 Q68,12 69,30 Q69,22 50,20 Q31,22 31,30 Z" fill="${hair}"/>
+                  <rect x="29" y="30" width="3" height="10" rx="1.5" fill="${hair}"/>
+                  <rect x="68" y="30" width="3" height="10" rx="1.5" fill="${hair}"/>`,
+          bob: `<path d="M29,32 Q30,11 50,10 Q70,11 71,32 L71,60 Q65,50 64,34 Q57,27 50,27 Q43,27 36,34 Q35,50 29,60 Z" fill="${hair}"/>`,
+          slick: `<path d="M30,31 Q32,13 50,12 Q68,13 70,31 Q59,19 50,19 Q41,19 30,31 Z" fill="${hair}"/>
+                  <line x1="46" y1="13" x2="44" y2="22" stroke="rgba(0,0,0,0.35)" stroke-width="1"/>`,
+        };
+        const browShapes = {
+          stern: `<path d="M36,38 L45,40" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>
+                  <path d="M55,40 L64,38" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>`,
+          sharp: `<path d="M36,39 L45,39" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>
+                  <path d="M55,37 L64,34" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>`,
+          nervous: `<path d="M36,40 L45,37" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>
+                    <path d="M55,37 L64,40" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>`,
+        };
+        const mouthShapes = {
+          stern: `<path d="M41,61 Q50,57 59,61" stroke="#6b3d34" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
+          sharp: `<path d="M42,60 L58,60" stroke="#6b3d34" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
+          nervous: `<path d="M42,62 Q50,59 58,62" stroke="#6b3d34" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
+        };
+        const clothingExtra = clothingType === 'uniform'
+          ? `<path d="M42,68 L50,74 L58,68 L58,72 L50,78 L42,72 Z" fill="rgba(255,255,255,0.12)"/>
+             <circle cx="38" cy="82" r="3" fill="#e8b04b" opacity="0.85"/>`
+          : `<path d="M40,66 L50,76 L46,100 L50,100 L50,78 L54,100 L58,100 L54,76 L60,66 Z" fill="rgba(0,0,0,0.18)"/>
+             <circle cx="50" cy="80" r="1.4" fill="rgba(255,255,255,0.4)"/>`;
+        const eye = cx => `
+          <ellipse cx="${cx}" cy="42" rx="5.4" ry="3.3" fill="#f2e8d8"/>
+          <circle cx="${cx}" cy="42" r="2.2" fill="#3b2a1d"/>
+          <circle cx="${cx - 0.6}" cy="41.3" r="0.6" fill="#fff" opacity="0.8"/>
+          <rect class="portrait-eyelid" x="${cx - 5.4}" y="38.7" width="10.8" height="6.6" fill="${skin}" style="animation-delay:${delay}s"/>
+        `;
+
+        return `<svg viewBox="0 0 100 100" role="img" aria-label="Illustrated portrait">
+          <g class="portrait-sway">
+            <path d="M8,100 Q10,74 30,66 Q40,72 50,72 Q60,72 70,66 Q90,74 92,100 Z" fill="${clothing}"/>
+            ${clothingExtra}
+            <rect x="42" y="58" width="16" height="14" rx="3" fill="${skin}"/>
+            <ellipse cx="31" cy="47" rx="3.2" ry="6" fill="${skin}"/>
+            <ellipse cx="69" cy="47" rx="3.2" ry="6" fill="${skin}"/>
+            <ellipse cx="50" cy="46" rx="18" ry="21" fill="${skin}"/>
+            ${hairShapes[hairStyle] || hairShapes.short}
+            ${browShapes[expression] || browShapes.stern}
+            ${eye(40)}
+            ${eye(60)}
+            <path d="M50,44 L48.5,53 Q50,54.5 51.5,53 Z" fill="rgba(0,0,0,0.18)"/>
+            ${mouthShapes[expression] || mouthShapes.stern}
+          </g>
+        </svg>`;
+      }
+
       const suspectGrid = $('suspect-grid');
-      caseData.suspects.forEach(s => {
+      caseData.suspects.forEach((s, i) => {
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'suspect-card';
-        const initials = s.name.split(' ').map(w => w[0]).join('').slice(0, 2);
         card.innerHTML = `
-          <img class="suspect-photo" src="${s.photo}" alt="Photo of ${s.name}" loading="lazy"
-               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div class="suspect-photo suspect-photo-fallback" aria-hidden="true">${initials}</div>
+          <div class="suspect-portrait">${buildPortraitSVG(s.avatar, (i * 1.4).toFixed(2))}</div>
           <div class="suspect-name">${s.name}</div>
           <div class="suspect-role">${s.role}</div>
           <div class="suspect-tag">Person of interest</div>
@@ -963,7 +1051,7 @@
         card.addEventListener('click', () => openDetail({
           eyebrow: s.role,
           title: s.name,
-          photo: s.photo,
+          avatar: s.avatar,
           body: s.statement,
           alibi: s.alibi,
           suspicion: s.suspicion,
@@ -971,19 +1059,18 @@
         suspectGrid.appendChild(card);
       });
 
-      function openDetail({ eyebrow, title, sub, body, photo, alibi, suspicion }) {
+      function openDetail({ eyebrow, title, sub, body, avatar, alibi, suspicion }) {
         $('detail-eyebrow').textContent = eyebrow || '';
         $('detail-title').textContent = title || '';
         $('detail-sub').textContent = sub || '';
         $('detail-body').textContent = body || '';
 
         const photoEl = $('detail-photo');
-        if (photo) {
-          photoEl.onerror = () => { photoEl.hidden = true; };
-          photoEl.src = photo;
-          photoEl.alt = title;
+        if (avatar) {
+          photoEl.innerHTML = buildPortraitSVG(avatar, '0');
           photoEl.hidden = false;
         } else {
+          photoEl.innerHTML = '';
           photoEl.hidden = true;
         }
 
