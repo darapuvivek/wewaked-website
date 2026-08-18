@@ -3,860 +3,683 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wewaked — the case is open</title>
-  <meta name="description" content="Wewaked — thoughts, ideas, and stories on everything. Step into the investigation room and see what doesn't add up." />
-  <meta name="theme-color" content="#0b0906" />
+  <title>Wewaked — The Marchetti Case</title>
+  <meta name="description" content="An interrogation. Three suspects, one house, one night. Sit down across the desk and find out which one of them is lying about the murder." />
+  <meta name="theme-color" content="#08080a" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Wewaked" />
-  <meta property="og:description" content="Thoughts, ideas, and stories on everything — tech, life, gaming, and whatever feels worth writing about." />
+  <meta property="og:title" content="Wewaked — The Marchetti Case" />
+  <meta property="og:description" content="Three people were in the house. All three are lying. Only one of them is lying about the murder." />
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕯️</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --text: #ece5d8;
-      --muted: #948a78;
-      --border: #2a2620;
-      --bg: #0b0906;
-      --bg-raised: #14110c;
-      --accent: #e8b04b;
-      --accent-dim: #a97f34;
-      --tag-bg: #17140e;
-      --focus-ring: #e8b04b;
-      --danger: #b3543f;
+      --bg:            #08080a;
+      --bg-2:          #0e0e11;
+      --surface:       rgba(255,255,255,0.045);
+      --surface-2:     rgba(255,255,255,0.07);
+      --hairline:      rgba(255,255,255,0.09);
+      --hairline-2:    rgba(255,255,255,0.14);
+      --text:          #f5f5f7;
+      --text-2:        #a1a1a6;
+      --text-3:        #6e6e73;
+      --blue:          #0a84ff;
+      --amber:         #ff9f0a;
+      --red:           #ff453a;
+      --green:         #30d158;
+      --lamp:          #ffb340;
+      --radius:        20px;
+      --radius-sm:     13px;
+      --ease:          cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-soft:     cubic-bezier(0.4, 0, 0.2, 1);
       color-scheme: dark;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        transition: none !important;
-        animation: none !important;
-      }
-    }
-
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.5;
+      letter-spacing: -0.011em;
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
     a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 
-    :focus-visible {
-      outline: 2px solid var(--focus-ring);
-      outline-offset: 3px;
-      border-radius: 4px;
+    :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
     }
 
     .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: var(--accent);
-      color: var(--bg);
-      padding: 8px 16px;
-      z-index: 200;
-      border-radius: 0 0 8px 0;
+      position: absolute; left: -9999px; top: 0; z-index: 300;
+      background: var(--blue); color: #fff; padding: 10px 18px; border-radius: 0 0 10px 0;
     }
     .skip-link:focus { left: 0; }
 
-    /* ── Dust / grain ── */
-    #dust {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      display: block;
-    }
-    .grain {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0.05;
-      mix-blend-mode: overlay;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
-    .vignette {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      background: radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(0,0,0,0.55) 100%);
-    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 
-    /* ── Header ── */
+    /* ─────────────────────────────────────────────── header */
     header {
-      position: relative;
-      z-index: 50;
-      border-bottom: 1px solid var(--border);
-      background: rgba(11, 9, 6, 0.7);
-      backdrop-filter: blur(6px);
-      padding: 0 24px;
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,8,10,0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--hairline);
     }
     .header-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
+      max-width: 1120px; margin: 0 auto; padding: 0 24px;
+      height: 52px; display: flex; align-items: center; justify-content: space-between;
     }
-    .logo {
-      font-family: 'Lora', serif;
-      font-size: clamp(1.25rem, 1.1rem + 0.4vw, 1.5rem);
-      font-weight: 600;
-      letter-spacing: -0.5px;
+    .logo { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.02em; }
+    nav { display: flex; align-items: center; gap: 22px; }
+    nav a { font-size: 0.8125rem; color: var(--text-2); transition: color 0.2s var(--ease-soft); }
+    nav a:hover { color: var(--text); }
+    .pill {
+      font-size: 0.8125rem; font-weight: 500;
+      padding: 5px 14px; border-radius: 980px;
+      background: var(--blue); color: #fff;
+      transition: opacity 0.2s var(--ease-soft), transform 0.2s var(--ease);
     }
-    nav[aria-label] {
-      display: flex;
-      align-items: center;
-    }
-    nav[aria-label] a {
-      font-size: 0.875rem;
-      color: var(--muted);
-      margin-left: 24px;
-      transition: color 0.15s;
-    }
-    nav[aria-label] a:hover { color: var(--text); }
-    .nav-btn {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--accent);
-      background: var(--tag-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px 14px;
-      margin-left: 24px;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .nav-btn:hover { background: var(--border); }
-    .user-chip {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-left: 24px;
-      white-space: nowrap;
-    }
+    .pill:hover { opacity: 0.85; }
+    .pill:active { transform: scale(0.96); }
+    .pill.ghost { background: var(--surface-2); color: var(--text); }
+    .user-chip { font-size: 0.78rem; color: var(--text-3); }
 
-    /* ── Hero ── */
-    .hero {
-      position: relative;
-      z-index: 10;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 72px 24px 40px;
-      text-align: center;
+    /* ─────────────────────────────────────────────── hero */
+    .hero { padding: 88px 0 56px; text-align: center; }
+    .eyebrow {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--amber); margin-bottom: 16px;
     }
     .hero h1 {
-      font-family: 'Lora', serif;
-      font-size: clamp(2rem, 1.6rem + 2vw, 3.2rem);
-      font-weight: 600;
-      letter-spacing: -1px;
-      margin-bottom: 18px;
-      background: linear-gradient(180deg, #fff 0%, #c9a86a 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero p {
-      font-family: 'Lora', serif;
-      font-size: clamp(1rem, 0.95rem + 0.4vw, 1.2rem);
-      color: var(--muted);
-      max-width: 560px;
-      margin: 0 auto;
-      line-height: 1.75;
-    }
-    .hero .hint {
-      margin-top: 18px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      letter-spacing: 0.04em;
-      color: #6b6255;
-    }
-
-    /* ── Investigation room ── */
-    .investigation {
-      position: relative;
-      z-index: 10;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px 24px;
-    }
-    .case-intro {
-      max-width: 720px;
-      margin: 0 auto 40px;
-      text-align: center;
-    }
-    .case-intro .case-title {
-      font-family: 'Lora', serif;
-      font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.9rem);
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-    .case-intro .case-location {
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent-dim);
-      margin-bottom: 14px;
-    }
-    .case-intro .case-synopsis {
-      color: var(--muted);
-      font-family: 'Lora', serif;
-      line-height: 1.75;
-    }
-
-    /* ── Case dossier (always-visible case details) ── */
-    .dossier {
-      max-width: 720px;
-      margin: 0 auto 36px;
-      padding: 24px 28px;
-      border-radius: 12px;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-    }
-    .dossier-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px 24px;
-      margin-bottom: 18px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--border);
-    }
-    .dossier-grid > div { display: flex; flex-direction: column; gap: 2px; }
-    .dossier-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent-dim);
-    }
-    .dossier-narrative {
-      font-family: 'Lora', serif;
-      color: var(--text);
-      line-height: 1.75;
+      font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
+      font-weight: 700; letter-spacing: -0.035em; line-height: 1.06;
       margin-bottom: 20px;
+      background: linear-gradient(180deg, #fff 30%, #8a8a90 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .dossier h4 {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent-dim);
-      margin: 18px 0 10px;
+    .hero .lede {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.3125rem);
+      line-height: 1.6; color: var(--text-2);
+      max-width: 620px; margin: 0 auto;
     }
-    .dossier-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .dossier-list li {
-      font-size: 0.9rem;
-      line-height: 1.6;
-      padding-left: 14px;
-      border-left: 2px solid var(--accent-dim);
-    }
-    .dossier-list li strong { color: var(--text); }
-    .dossier-list li span { color: var(--muted); }
-
-    .scene-hint {
-      max-width: 720px;
-      margin: 0 auto 16px;
-      text-align: center;
-      font-size: 0.82rem;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    .desk-scene {
-      position: relative;
-      height: 460px;
-      border-radius: 16px;
-      overflow: hidden;
-      background:
-        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(232, 176, 75, 0.16), transparent 65%),
-        linear-gradient(180deg, #1c1108 0%, #150d07 55%, #0e0a05 100%);
-      border: 1px solid var(--border);
-      perspective: 1000px;
-    }
-    .desk-tilt {
-      position: absolute;
-      inset: 0;
-      transform-style: preserve-3d;
-      transition: transform 0.2s ease-out;
-      will-change: transform;
-    }
-    @keyframes item-float {
-      0%, 100% { transform: translateZ(20px) translateY(0); }
-      50% { transform: translateZ(20px) translateY(-1.5px); }
-    }
-    .desk-item {
-      animation: item-float 7s ease-in-out infinite;
-    }
-    .desk-surface {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 46%;
-      background:
-        repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0 2px, transparent 2px 42px),
-        linear-gradient(180deg, #3a2415 0%, #2a1a0f 100%);
-      box-shadow: inset 0 12px 24px rgba(0,0,0,0.5);
-    }
-    .desk-surface::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 50% 80% at 50% 0%, rgba(232, 176, 75, 0.14), transparent 70%);
-    }
-
-    .desk-item {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      color: var(--muted);
-      transition: transform 0.15s ease;
-    }
-    .desk-item:hover, .desk-item:focus-visible { transform: translateZ(20px) translateY(-4px) scale(1.1); color: var(--text); animation-play-state: paused; }
-    .desk-item .item-label {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.8);
-    }
-    .shape {
-      display: block;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5));
-    }
-    .shape.folder {
-      width: 46px; height: 34px;
-      background: linear-gradient(180deg, #c99a4e, #a97a34);
-      border-radius: 2px 6px 2px 2px;
-      position: relative;
-    }
-    .shape.folder::before {
-      content: '';
-      position: absolute;
-      top: -8px; left: 0;
-      width: 22px; height: 8px;
-      background: inherit;
-      border-radius: 4px 4px 0 0;
-    }
-    .shape.magnifier {
-      width: 30px; height: 30px;
-      border: 5px solid #d8dde3;
-      border-radius: 50%;
-      position: relative;
-      background:
-        radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.12) 24%, transparent 45%),
-        radial-gradient(circle at 60% 65%, rgba(148, 197, 224, 0.18), transparent 60%);
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25);
-    }
-    .shape.magnifier::before {
-      content: '';
-      position: absolute;
-      inset: -5px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #f1f4f7, #9aa3ad);
-      z-index: -1;
-    }
-    .shape.magnifier::after {
-      content: '';
-      position: absolute;
-      width: 17px; height: 5px;
-      background: linear-gradient(90deg, #8a5a2e, #5c3a1c);
-      bottom: -13px; right: -11px;
-      transform: rotate(45deg);
-      border-radius: 3px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.4);
-    }
-    .shape.photo {
-      width: 40px; height: 48px;
-      background: #eee5d2;
-      padding: 3px;
-      transform: rotate(-6deg);
-    }
-    .shape.photo::before {
-      content: '';
-      display: block;
-      width: 100%; height: 70%;
-      background: linear-gradient(135deg, #2b2f38, #4a5568);
-    }
-    .shape.notepad {
-      width: 34px; height: 44px;
-      background: #e9e2cf;
-      border-radius: 2px;
-      background-image: repeating-linear-gradient(180deg, transparent 0 7px, rgba(0,0,0,0.12) 7px 8px);
-    }
-    .shape.cup {
-      width: 26px; height: 22px;
-      background: linear-gradient(180deg, #5a4f42, #2e2822);
-      border-radius: 0 0 10px 10px;
-      position: relative;
-      margin-bottom: 10px;
-    }
-    .shape.cup::after {
-      content: '';
-      position: absolute;
-      right: -10px; top: 2px;
-      width: 10px; height: 12px;
-      border: 3px solid #4b4238;
-      border-left: none;
-      border-radius: 0 8px 8px 0;
-    }
-    .shape.cup::before {
-      content: '';
-      position: absolute;
-      left: -3px; bottom: -6px;
-      width: 32px; height: 5px;
-      background: linear-gradient(180deg, #3a3229, #241f18);
-      border-radius: 50%;
-    }
-    .shape.phone {
-      width: 40px; height: 24px;
-      position: relative;
-      background: linear-gradient(180deg, #2c2c2c, #131313);
-      border-radius: 12px;
-      box-shadow: inset 0 2px 3px rgba(255,255,255,0.06), 0 3px 4px rgba(0,0,0,0.4);
-    }
-    .shape.phone::before, .shape.phone::after {
-      content: '';
-      position: absolute;
-      top: -4px;
-      width: 12px; height: 12px;
-      background: radial-gradient(circle at 35% 30%, #3a3a3a, #101010);
-      border-radius: 50%;
-    }
-    .shape.phone::before { left: -2px; }
-    .shape.phone::after { right: -2px; }
-    .shape.key {
-      width: 32px; height: 14px;
-      background: #cbb26a;
-      border-radius: 7px 2px 2px 7px;
-      position: relative;
-    }
-    .shape.key::before {
-      content: '';
-      position: absolute;
-      right: -8px; top: -4px;
-      width: 14px; height: 14px;
-      border: 3px solid #cbb26a;
-      border-radius: 50%;
-    }
-
-    .desk-lamp-glow {
-      position: absolute;
-      top: -60px; left: 50%;
-      width: 420px; height: 420px;
-      transform: translateX(-50%);
-      background: radial-gradient(circle, rgba(232, 176, 75, 0.22), transparent 65%);
-      pointer-events: none;
-    }
-
-    /* ── Evidence board ── */
-    .evidence-board {
+    .hero-meta {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
       margin-top: 28px;
-      padding: 24px;
-      border-radius: 16px;
+    }
+    .chip {
+      font-size: 0.75rem; color: var(--text-2);
+      padding: 6px 13px; border-radius: 980px;
+      background: var(--surface); border: 1px solid var(--hairline);
+    }
+
+    /* ─────────────────────────────────────────────── the room */
+    .room-section { padding: 24px 0 0; }
+    .room {
+      position: relative;
+      width: 100%;
+      height: clamp(440px, 56vw, 620px);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #060607;
+      border: 1px solid var(--hairline);
+      perspective: 780px;
+      perspective-origin: 50% 38%;
+      isolation: isolate;
+    }
+
+    /* back wall + floor */
+    .wall {
+      position: absolute; inset: 0 0 30% 0;
       background:
-        repeating-linear-gradient(0deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 40px),
-        repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 40px),
-        linear-gradient(180deg, #241a10 0%, #1a130c 100%);
-      border: 1px solid var(--border);
+        radial-gradient(ellipse 46% 62% at 50% 30%, rgba(255,179,64,0.15), transparent 68%),
+        linear-gradient(180deg, #14120f 0%, #0d0c0b 60%, #08080a 100%);
     }
-    .evidence-board h3 {
-      font-family: 'Lora', serif;
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--accent-dim);
-      margin-bottom: 16px;
+    .floor {
+      position: absolute; inset: 70% 0 0 0;
+      background: linear-gradient(180deg, #0b0a0a 0%, #060606 100%);
     }
-    .suspect-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 18px;
-    }
-    .suspect-card {
-      position: relative;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-      text-align: left;
-      cursor: pointer;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      transform: rotate(-1deg);
-      transition: transform 0.15s ease, border-color 0.15s ease;
-    }
-    .suspect-card:nth-child(even) { transform: rotate(1.2deg); }
-    .suspect-card:hover, .suspect-card:focus-visible {
-      transform: rotate(0deg) translateY(-3px);
-      border-color: var(--accent-dim);
-    }
-    .suspect-card::before {
-      content: '';
-      position: absolute;
-      top: -6px; left: 50%;
-      width: 12px; height: 12px;
-      transform: translateX(-50%);
-      background: var(--danger);
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    .suspect-portrait {
-      width: 100%;
-      aspect-ratio: 1;
-      border-radius: 6px;
-      display: block;
-      margin-bottom: 10px;
-      overflow: hidden;
-      background: linear-gradient(160deg, #241a10, #150e08);
-      box-shadow: inset 0 0 24px rgba(0,0,0,0.5);
-    }
-    .suspect-portrait svg { width: 100%; height: 100%; display: block; }
-    .portrait-sway { transform-origin: 50% 100%; animation: portrait-sway 6s ease-in-out infinite; }
-    .portrait-eyelid { transform-box: fill-box; transform-origin: center; animation: portrait-blink 5.2s ease-in-out infinite; }
-    @keyframes portrait-sway {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-1.2px) rotate(0.5deg); }
-    }
-    @keyframes portrait-blink {
-      0%, 92%, 100% { transform: scaleY(0.05); }
-      95%, 97% { transform: scaleY(1); }
-    }
-    .suspect-name {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    .suspect-role {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    .suspect-tag {
-      display: inline-block;
-      margin-top: 8px;
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--danger);
-    }
-
-    /* ── Detail panel ── */
-    #detail-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 90;
-      background: rgba(0,0,0,0.6);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-    #detail-overlay.show { opacity: 1; pointer-events: auto; }
-    #detail-panel {
-      position: fixed;
-      z-index: 100;
-      top: 0; right: 0;
-      height: 100%;
-      width: min(420px, 100%);
-      background: var(--bg-raised);
-      border-left: 1px solid var(--border);
-      padding: 28px 24px;
-      transform: translateX(100%);
-      transition: transform 0.25s ease;
-      overflow-y: auto;
-    }
-    #detail-panel.show { transform: translateX(0); }
-    #detail-close {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 8px;
-      padding: 6px 12px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      margin-bottom: 20px;
-    }
-    #detail-close:hover { color: var(--text); border-color: var(--accent-dim); }
-    #detail-photo {
-      width: 100%;
-      aspect-ratio: 1;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      overflow: hidden;
-      background: linear-gradient(160deg, #241a10, #150e08);
-    }
-    #detail-photo svg { width: 100%; height: 100%; display: block; }
-    #detail-eyebrow {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-    #detail-title {
-      font-family: 'Lora', serif;
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    #detail-sub {
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-    #detail-body {
-      font-family: 'Lora', serif;
-      line-height: 1.75;
-      color: var(--text);
-    }
-    #detail-alibi {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-    #detail-alibi strong { color: var(--text); }
-    .suspicion-meter {
-      display: flex;
-      gap: 4px;
-      margin-top: 12px;
-    }
-    .suspicion-meter span {
-      flex: 1;
-      height: 5px;
+    /* one-way mirror on the back wall */
+    .mirror {
+      position: absolute; left: 4.5%; top: 13%; width: 21%; height: 34%;
       border-radius: 3px;
-      background: var(--border);
+      background: linear-gradient(150deg, rgba(160,190,215,0.16) 0%, rgba(120,140,170,0.05) 45%, rgba(255,255,255,0.08) 100%);
+      border: 1px solid rgba(255,255,255,0.13);
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.4);
     }
-    .suspicion-meter span.filled { background: var(--danger); }
+    /* wall panelling + skirting give the room real depth */
+    .wall::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 34%;
+      background:
+        linear-gradient(180deg, transparent, rgba(0,0,0,0.4)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.022) 0 1px, transparent 1px 108px);
+      border-bottom: 2px solid rgba(255,255,255,0.05);
+    }
+    .mirror::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+    }
+    /* hanging lamp + its cone */
+    .lamp-cord {
+      position: absolute; left: 50%; top: 0; width: 2px; height: 12%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));
+      transform: translateX(-50%);
+    }
+    .lamp-shade {
+      position: absolute; left: 50%; top: 9%;
+      width: 132px; height: 46px; transform: translateX(-50%);
+      background: linear-gradient(180deg, #35312b 0%, #1c1913 60%, #0f0d0a 100%);
+      clip-path: polygon(33% 0, 67% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.7));
+    }
+    .lamp-shade::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 7px;
+      background: radial-gradient(ellipse at 50% 100%, rgba(255,205,130,0.85), rgba(255,179,64,0.15) 70%, transparent);
+    }
+    .lamp-bulb {
+      position: absolute; left: 50%; top: calc(9% + 42px);
+      width: 17px; height: 17px; transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #fffaf0, var(--lamp) 58%, #a8681a 100%);
+      box-shadow: 0 0 50px 20px rgba(255,179,64,0.34);
+      animation: bulb-flicker 6.5s ease-in-out infinite;
+    }
+    @keyframes bulb-flicker {
+      0%, 100%   { opacity: 1; }
+      41%, 43%   { opacity: 0.82; }
+      42%        { opacity: 0.62; }
+      77%, 79%   { opacity: 0.88; }
+    }
+    .light-cone {
+      position: absolute; left: 50%; top: calc(9% + 46px);
+      width: 96%; height: 84%; transform: translateX(-50%);
+      background: linear-gradient(180deg, rgba(255,190,95,0.20) 0%, rgba(255,179,64,0.07) 42%, transparent 76%);
+      clip-path: polygon(45.5% 0, 54.5% 0, 92% 100%, 8% 100%);
+      filter: blur(16px);
+      pointer-events: none;
+      transition: opacity 0.5s var(--ease-soft);
+    }
+    .room.dimmed .light-cone { opacity: 0.35; }
+    .room.dimmed .wall { filter: brightness(0.55); }
+    .room.dimmed .suspect-stage { filter: brightness(0.6) saturate(0.85); }
 
-    /* ── About ── */
-    .about {
-      position: relative;
-      z-index: 10;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 56px 24px 0;
+    /* the suspect, seated across the desk */
+    .suspect-stage {
+      position: absolute; left: 50%; bottom: 27%;
+      width: clamp(230px, 30vw, 330px);
+      transform: translateX(-50%);
+      transition: opacity 0.45s var(--ease), transform 0.55s var(--ease), filter 0.5s var(--ease-soft);
+      z-index: 2;
     }
-    .about h2 {
-      font-family: 'Lora', serif;
-      font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.5rem);
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-    .about p {
-      color: var(--muted);
-      max-width: 520px;
+    .suspect-stage.swapping { opacity: 0; transform: translateX(-50%) translateY(14px) scale(0.97); }
+    .suspect-stage svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .chair-back {
+      position: absolute; left: 50%; bottom: -6%; width: 74%; height: 42%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #1b1a18, #0f0e0d);
+      border-radius: 14px 14px 4px 4px;
+      z-index: -1;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.6);
     }
 
-    /* ── Admin ── */
-    .admin {
-      position: relative;
-      z-index: 10;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 56px 24px 0;
+    /* character animation */
+    .fig-breathe { animation: breathe 4.6s ease-in-out infinite; transform-origin: 50% 100%; }
+    @keyframes breathe {
+      0%, 100% { transform: translateY(0) scaleY(1); }
+      50%      { transform: translateY(-1.6px) scaleY(1.007); }
     }
-    .admin h2 {
-      font-family: 'Lora', serif;
-      font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.5rem);
-      font-weight: 600;
-      margin-bottom: 16px;
+    .fig-head { animation: head-sway 9s ease-in-out infinite; transform-origin: 110px 150px; }
+    @keyframes head-sway {
+      0%, 100% { transform: rotate(0deg) translateX(0); }
+      33%      { transform: rotate(0.9deg) translateX(1.4px); }
+      66%      { transform: rotate(-0.7deg) translateX(-1.1px); }
     }
-    .admin form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 520px;
+    .lid { transform-box: fill-box; transform-origin: center top; animation: blink 6.2s ease-in-out infinite; }
+    @keyframes blink {
+      0%, 93.5%, 100% { transform: scaleY(0); }
+      95.5%, 96.8%    { transform: scaleY(1); }
     }
-    .admin label {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--muted);
+    .mood-tense  .lid { animation-duration: 3.1s; }
+    .mood-broken .lid { animation-duration: 2.4s; }
+    .mood-tense  .fig-head { animation-duration: 5s; }
+    .mood-broken .fig-head { animation-duration: 3.4s; }
+    .brow-l, .brow-r, .mouth-shape { transition: transform 0.55s var(--ease); }
+    .mood-tense  .brow-l { transform: translate(2px, 3px) rotate(4deg); }
+    .mood-tense  .brow-r { transform: translate(-2px, 3px) rotate(-4deg); }
+    .mood-tense  .mouth-shape { transform: translateY(1.5px) scaleX(0.9); }
+    .mood-broken .brow-l { transform: translate(1px, -2px) rotate(-7deg); }
+    .mood-broken .brow-r { transform: translate(-1px, -2px) rotate(7deg); }
+    .mood-broken .mouth-shape { transform: translateY(3px) scaleX(0.82); }
+    .sweat { opacity: 0; transition: opacity 0.6s var(--ease-soft); }
+    .mood-tense .sweat, .mood-broken .sweat { opacity: 1; animation: sweat-run 5s ease-in infinite; }
+    @keyframes sweat-run {
+      0%   { transform: translateY(0); opacity: 0; }
+      18%  { opacity: 0.9; }
+      75%  { transform: translateY(17px); opacity: 0.9; }
+      100% { transform: translateY(22px); opacity: 0; }
     }
+
+    /* ── the desk, in real perspective, in the foreground */
+    .desk-plane {
+      position: absolute; left: 50%; bottom: -14%;
+      width: 132%; height: 96%;
+      transform: translateX(-50%) rotateX(76deg);
+      transform-origin: 50% 100%;
+      transform-style: preserve-3d;
+      background:
+        linear-gradient(180deg, rgba(255,179,64,0.10) 0%, transparent 42%),
+        repeating-linear-gradient(91deg, rgba(0,0,0,0.16) 0 1px, transparent 1px 46px),
+        linear-gradient(180deg, #3a2c21 0%, #2b2018 46%, #1a130e 100%);
+      box-shadow: 0 -30px 60px rgba(0,0,0,0.55);
+      z-index: 3;
+    }
+    .desk-plane::before {  /* specular sheen under the lamp */
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 34% 46% at 50% 8%, rgba(255,200,120,0.20), transparent 70%);
+      pointer-events: none;
+    }
+    .desk-edge {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 3.5%;
+      background: linear-gradient(180deg, #4a382a, #241a12);
+      z-index: 4;
+    }
+
+    .prop {
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.3s var(--ease), filter 0.3s var(--ease-soft);
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.55));
+    }
+    .prop svg { display: block; overflow: visible; }
+    .prop.flat  { transform: translate(-50%, -50%); }
+    .prop.stand { transform: translate(-50%, -100%) rotateX(-76deg); transform-origin: 50% 100%; }
+    .prop.flat:hover,  .prop.flat:focus-visible  { transform: translate(-50%, -50%) scale(1.1); filter: drop-shadow(0 10px 16px rgba(0,0,0,0.6)) brightness(1.16); }
+    .prop.stand:hover, .prop.stand:focus-visible { transform: translate(-50%, -100%) rotateX(-76deg) scale(1.1); filter: drop-shadow(0 10px 16px rgba(0,0,0,0.6)) brightness(1.16); }
+    .prop-label {
+      position: absolute; left: 50%; top: 100%;
+      transform: translateX(-50%); margin-top: 5px;
+      font-size: 9px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+      color: rgba(255,255,255,0.55); white-space: nowrap;
+      opacity: 0; transition: opacity 0.25s var(--ease-soft);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+    .prop:hover .prop-label, .prop:focus-visible .prop-label { opacity: 1; }
+    .prop.alert { animation: prop-alert 1.6s ease-in-out infinite; }
+    @keyframes prop-alert {
+      0%, 100% { filter: drop-shadow(0 6px 10px rgba(0,0,0,0.55)); }
+      50%      { filter: drop-shadow(0 0 14px rgba(10,132,255,0.85)) brightness(1.25); }
+    }
+    .reel { transform-box: fill-box; transform-origin: center; animation: reel-spin 3.4s linear infinite; }
+    @keyframes reel-spin { to { transform: rotate(360deg); } }
+    .steam { animation: steam-rise 4.2s ease-in-out infinite; transform-box: fill-box; }
+    @keyframes steam-rise {
+      0%   { opacity: 0; transform: translateY(2px) scaleX(0.9); }
+      40%  { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(-11px) scaleX(1.25); }
+    }
+
+    /* speech bubble floating above the desk */
+    .dialogue {
+      position: absolute; left: 50%; top: 14%;
+      width: min(500px, 72%);
+      transform: translateX(-50%) translateY(8px);
+      z-index: 6;
+      background: rgba(20,20,23,0.78);
+      backdrop-filter: saturate(180%) blur(22px);
+      -webkit-backdrop-filter: saturate(180%) blur(22px);
+      border: 1px solid var(--hairline-2);
+      border-radius: var(--radius-sm);
+      padding: 15px 18px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+    }
+    .dialogue.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .dialogue-q {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 7px;
+    }
+    .dialogue-a {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 1.0625rem; line-height: 1.55; color: var(--text);
+    }
+
+    .room-badge {
+      position: absolute; right: 14px; top: 14px; z-index: 6;
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(12px);
+      padding: 6px 11px; border-radius: 980px; border: 1px solid var(--hairline);
+    }
+    .rec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: rec-pulse 2s ease-in-out infinite; }
+    @keyframes rec-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+    /* ─────────────────────────────────────────────── console */
+    .console { margin-top: 20px; display: grid; gap: 16px; }
+
+    .suspect-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+    .suspect-tab {
+      flex: 1 1 180px;
+      display: flex; align-items: center; gap: 11px;
+      padding: 11px 14px; border-radius: var(--radius-sm);
+      background: var(--surface); border: 1px solid var(--hairline);
+      transition: background 0.22s var(--ease-soft), border-color 0.22s var(--ease-soft), transform 0.22s var(--ease);
+      text-align: left;
+    }
+    .suspect-tab:hover { background: var(--surface-2); }
+    .suspect-tab:active { transform: scale(0.985); }
+    .suspect-tab[aria-selected="true"] { background: var(--surface-2); border-color: var(--hairline-2); }
+    .tab-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .tab-name { font-size: 0.875rem; font-weight: 600; }
+    .tab-role { font-size: 0.75rem; color: var(--text-3); }
+
+    .panel {
+      background: var(--surface); border: 1px solid var(--hairline);
+      border-radius: var(--radius); padding: 20px;
+    }
+    .panel-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      margin-bottom: 15px; flex-wrap: wrap;
+    }
+    .panel-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
+
+    .composure { display: flex; align-items: center; gap: 10px; min-width: 210px; }
+    .composure-track { flex: 1; height: 4px; border-radius: 980px; background: rgba(255,255,255,0.1); overflow: hidden; }
+    .composure-fill {
+      height: 100%; border-radius: 980px; background: var(--green);
+      transition: width 0.6s var(--ease), background-color 0.6s var(--ease-soft);
+    }
+    .composure-val { font-size: 0.75rem; color: var(--text-3); font-variant-numeric: tabular-nums; min-width: 92px; text-align: right; }
+
+    .q-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 9px; }
+    .q-btn {
+      text-align: left; padding: 13px 15px; border-radius: var(--radius-sm);
+      background: var(--surface); border: 1px solid var(--hairline);
+      font-size: 0.875rem; line-height: 1.45; color: var(--text);
+      transition: background 0.2s var(--ease-soft), border-color 0.2s var(--ease-soft), transform 0.2s var(--ease);
+    }
+    .q-btn:hover { background: var(--surface-2); border-color: var(--hairline-2); }
+    .q-btn:active { transform: scale(0.985); }
+    .q-btn[disabled] { opacity: 0.4; cursor: default; }
+
+    .action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .action {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.8125rem; font-weight: 500;
+      padding: 9px 15px; border-radius: 980px;
+      background: var(--surface-2); border: 1px solid var(--hairline);
+      transition: background 0.2s var(--ease-soft), transform 0.2s var(--ease), opacity 0.2s;
+    }
+    .action:hover { background: rgba(255,255,255,0.11); }
+    .action:active { transform: scale(0.96); }
+    .action[disabled] { opacity: 0.35; cursor: default; }
+    .action.danger { background: rgba(255,69,58,0.14); border-color: rgba(255,69,58,0.3); color: #ff6b61; }
+    .action.danger:hover { background: rgba(255,69,58,0.2); }
+    .action.primary { background: var(--blue); border-color: transparent; color: #fff; }
+    .action.primary:hover { opacity: 0.88; background: var(--blue); }
+
+    .transcript { display: grid; gap: 11px; max-height: 260px; overflow-y: auto; padding-right: 4px; }
+    .transcript:empty::after {
+      content: 'Nothing on the record yet.';
+      font-size: 0.8125rem; color: var(--text-3);
+    }
+    .line-q { font-size: 0.8125rem; color: var(--blue); font-weight: 500; }
+    .line-a { font-family: 'Newsreader', Georgia, serif; font-size: 0.9375rem; line-height: 1.6; color: var(--text-2); }
+    .line-sys {
+      font-size: 0.8125rem; color: var(--amber);
+      padding: 9px 12px; border-radius: 10px;
+      background: rgba(255,159,10,0.09); border: 1px solid rgba(255,159,10,0.2);
+    }
+
+    /* evidence */
+    .ev-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+    .ev-card {
+      padding: 14px 16px; border-radius: var(--radius-sm);
+      background: var(--surface); border: 1px solid var(--hairline);
+      animation: ev-in 0.5s var(--ease) both;
+    }
+    @keyframes ev-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .ev-name { font-size: 0.875rem; font-weight: 600; margin-bottom: 5px; }
+    .ev-detail { font-size: 0.8125rem; line-height: 1.55; color: var(--text-2); }
+    .ev-locked {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 78px; border-radius: var(--radius-sm);
+      border: 1px dashed var(--hairline-2); color: var(--text-3); font-size: 0.8125rem;
+    }
+
+    /* timeline */
+    .tl { display: grid; gap: 0; }
+    .tl-row {
+      display: grid; grid-template-columns: 86px 1fr; gap: 14px;
+      padding: 11px 0; border-top: 1px solid var(--hairline);
+      font-size: 0.875rem;
+    }
+    .tl-row:first-child { border-top: none; }
+    .tl-time { color: var(--amber); font-variant-numeric: tabular-nums; font-weight: 500; }
+    .tl-event { color: var(--text-2); line-height: 1.5; }
+
+    /* verdict modal */
+    .scrim {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+      opacity: 0; pointer-events: none; transition: opacity 0.35s var(--ease);
+      display: grid; place-items: center; padding: 24px;
+    }
+    .scrim.show { opacity: 1; pointer-events: auto; }
+    .modal {
+      width: min(620px, 100%); max-height: 84vh; overflow-y: auto;
+      background: rgba(22,22,25,0.94);
+      backdrop-filter: saturate(180%) blur(30px);
+      border: 1px solid var(--hairline-2);
+      border-radius: 26px; padding: 32px;
+      transform: scale(0.94) translateY(12px);
+      transition: transform 0.4s var(--ease);
+    }
+    .scrim.show .modal { transform: none; }
+    .modal h3 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .modal .verdict-tag {
+      display: inline-block; font-size: 0.6875rem; font-weight: 700;
+      letter-spacing: 0.09em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 980px; margin-bottom: 16px;
+    }
+    .verdict-tag.right { background: rgba(48,209,88,0.15); color: var(--green); }
+    .verdict-tag.wrong { background: rgba(255,69,58,0.15); color: var(--red); }
+    .modal p {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 1.0625rem; line-height: 1.65; color: var(--text-2); margin-bottom: 14px;
+    }
+    .modal-actions { display: flex; gap: 9px; margin-top: 22px; flex-wrap: wrap; }
+
+    /* generic sections */
+    section.block { padding: 64px 0 0; }
+    .block h2 {
+      font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+      font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px;
+    }
+    .block .sub { font-size: 0.9375rem; color: var(--text-3); margin-bottom: 22px; }
+
+    .about p { font-size: 1.0625rem; line-height: 1.65; color: var(--text-2); max-width: 580px; }
+
+    /* admin */
+    .admin form { display: grid; gap: 12px; max-width: 520px; }
+    .admin label { display: grid; gap: 6px; font-size: 0.8125rem; font-weight: 500; color: var(--text-2); }
     .admin input, .admin textarea {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.925rem;
-      color: var(--text);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
+      font: inherit; font-size: 0.9375rem; color: var(--text);
+      background: var(--surface); border: 1px solid var(--hairline);
+      border-radius: 11px; padding: 11px 13px;
+      transition: border-color 0.2s var(--ease-soft);
     }
-    .admin textarea { min-height: 120px; resize: vertical; }
-    .admin .nav-btn { margin-left: 0; align-self: flex-start; }
-    .admin-status {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
+    .admin input:focus, .admin textarea:focus { border-color: var(--blue); outline: none; }
+    .admin textarea { min-height: 116px; resize: vertical; }
+    .admin-status { font-size: 0.8125rem; color: var(--text-3); }
 
-    /* ── Footer ── */
     footer {
-      position: relative;
-      z-index: 10;
-      max-width: 1200px;
-      margin: 56px auto 0;
-      padding: 32px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
+      margin-top: 88px; padding: 28px 0 40px;
+      border-top: 1px solid var(--hairline);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
-    footer span {
-      font-size: 0.8rem;
-      color: var(--muted);
+    footer span, footer a { font-size: 0.8125rem; color: var(--text-3); }
+    .footer-links { display: flex; gap: 20px; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 640px) {
+      .room { height: 420px; }
+      .dialogue { top: 3%; padding: 13px 15px; }
+      .dialogue-a { font-size: 0.9375rem; }
+      .hero { padding: 60px 0 40px; }
     }
-    .footer-links a {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-left: 20px;
-      transition: color 0.15s;
-    }
-    .footer-links a:hover { color: var(--text); }
   </style>
 </head>
 <body>
 
-  <canvas id="dust" aria-hidden="true"></canvas>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="vignette" aria-hidden="true"></div>
-
-  <a class="skip-link" href="#content">Skip to content</a>
+  <a class="skip-link" href="#room">Skip to the interrogation</a>
 
   <header>
     <div class="header-inner">
       <a href="/" class="logo">Wewaked</a>
-      <nav aria-label="Primary">
-        <a href="#investigation">Case</a>
+      <nav>
+        <a href="#room">Interrogation</a>
+        <a href="#casefile">Case file</a>
         <a href="#about">About</a>
         <span id="user-chip" class="user-chip" hidden></span>
-        <button id="btn-login" class="nav-btn" type="button" hidden>Login</button>
-        <button id="btn-logout" class="nav-btn" type="button" hidden>Logout</button>
+        <button id="btn-login" class="pill" type="button" hidden>Sign in</button>
+        <button id="btn-logout" class="pill ghost" type="button" hidden>Sign out</button>
       </nav>
     </div>
   </header>
 
-  <section class="hero">
-    <h1>The case is open.</h1>
-    <p>A blog, sometimes. A mystery, always. Step into the room, look over the desk, and see what doesn't add up.</p>
-    <p class="hint">Click the evidence. Question the suspects.</p>
-  </section>
-
-  <main id="investigation" class="investigation">
-    <div class="case-intro">
-      <div class="case-location" id="case-location"></div>
-      <h2 class="case-title" id="case-title"></h2>
-      <p class="case-synopsis" id="case-synopsis"></p>
-    </div>
-
-    <div class="dossier">
-      <div class="dossier-grid">
-        <div><span class="dossier-label">Case</span><span id="dossier-victim"></span></div>
-        <div><span class="dossier-label">Time</span><span id="dossier-time"></span></div>
+  <main>
+    <section class="hero wrap">
+      <div class="eyebrow" id="case-sub"></div>
+      <h1 id="case-title"></h1>
+      <p class="lede" id="case-briefing"></p>
+      <div class="hero-meta">
+        <span class="chip" id="chip-victim"></span>
+        <span class="chip" id="chip-found"></span>
+        <span class="chip" id="chip-weapon"></span>
       </div>
-      <p class="dossier-narrative" id="dossier-narrative"></p>
-      <h4>Evidence log</h4>
-      <ul class="dossier-list" id="dossier-evidence"></ul>
-      <h4>Persons of interest</h4>
-      <ul class="dossier-list" id="dossier-suspects"></ul>
-    </div>
+    </section>
 
-    <p class="scene-hint">Or look over the desk and question the suspects directly:</p>
+    <section class="room-section wrap" id="room">
+      <div class="room" id="room-el">
+        <div class="wall" aria-hidden="true"></div>
+        <div class="floor" aria-hidden="true"></div>
+        <div class="mirror" aria-hidden="true"></div>
+        <div class="lamp-cord" aria-hidden="true"></div>
+        <div class="lamp-shade" aria-hidden="true"></div>
+        <div class="lamp-bulb" aria-hidden="true"></div>
+        <div class="light-cone" aria-hidden="true"></div>
 
-    <div class="desk-scene" id="desk-scene">
-      <div class="desk-tilt" id="desk-tilt">
-        <div class="desk-lamp-glow" aria-hidden="true"></div>
-        <div class="desk-surface" aria-hidden="true"></div>
+        <div class="room-badge"><span class="rec-dot"></span><span>Interview in progress</span></div>
+
+        <div class="suspect-stage" id="suspect-stage">
+          <div class="chair-back" aria-hidden="true"></div>
+        </div>
+
+        <div class="dialogue" id="dialogue">
+          <div class="dialogue-q" id="dialogue-q"></div>
+          <div class="dialogue-a" id="dialogue-a"></div>
+        </div>
+
+        <div class="desk-plane" id="desk-plane" aria-hidden="false"></div>
+        <div class="desk-edge" aria-hidden="true"></div>
       </div>
-    </div>
 
-    <div class="evidence-board">
-      <h3>Persons of Interest</h3>
-      <div class="suspect-grid" id="suspect-grid"></div>
-    </div>
+      <div class="console">
+        <div class="suspect-bar" id="suspect-bar" role="tablist" aria-label="Suspects"></div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Questions</span>
+            <div class="composure">
+              <span class="panel-title">Composure</span>
+              <span class="composure-track"><span class="composure-fill" id="composure-fill"></span></span>
+              <span class="composure-val" id="composure-val"></span>
+            </div>
+          </div>
+          <div class="q-grid" id="q-grid"></div>
+          <div class="action-row">
+            <button class="action" id="btn-shuffle" type="button">Different questions</button>
+            <button class="action" id="btn-press" type="button">Press harder</button>
+            <button class="action" id="btn-cig" type="button">Offer a cigarette</button>
+            <button class="action" id="btn-water" type="button">Offer water</button>
+            <button class="action primary" id="btn-accuse" type="button">Make an arrest</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Transcript</span></div>
+          <div class="transcript" id="transcript"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block wrap" id="casefile">
+      <h2>Evidence</h2>
+      <p class="sub">Pick up the phone on the desk to chase the lab. They release one result at a time.</p>
+      <div class="ev-grid" id="ev-grid"></div>
+    </section>
+
+    <section class="block wrap">
+      <h2>That night</h2>
+      <p class="sub">Everything the house recorded, before anyone had a story.</p>
+      <div class="panel"><div class="tl" id="timeline"></div></div>
+    </section>
+
+    <section class="block wrap about" id="about">
+      <h2>About</h2>
+      <p>Wewaked is a personal site about tech, life, and gaming — plus the occasional murder that never happened. Written by one person, at odd hours.</p>
+    </section>
+
+    <section class="block wrap admin" id="admin" hidden>
+      <h2>Admin</h2>
+      <p class="sub">Publish a post to the site.</p>
+      <form id="admin-form">
+        <label>GitHub token
+          <input id="post-token" type="password" placeholder="Personal access token (repo scope)" autocomplete="off" />
+        </label>
+        <label>Tag <input id="post-tag" type="text" list="tags" placeholder="e.g. Tech" required /></label>
+        <datalist id="tags"><option value="Tech"></option><option value="Gaming"></option><option value="Life"></option></datalist>
+        <label>Date <input id="post-date" type="date" required /></label>
+        <label>Title <input id="post-title" type="text" placeholder="Post title" required /></label>
+        <label>Excerpt <textarea id="post-excerpt" placeholder="Short summary" required></textarea></label>
+        <button class="action primary" type="submit" style="justify-self:start">Publish post</button>
+        <p class="admin-status" id="admin-status"></p>
+      </form>
+    </section>
+
+    <footer class="wrap">
+      <span>© 2026 Wewaked</span>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/vivek-darapu/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://github.com/darapuvivek" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </footer>
   </main>
 
-  <div id="detail-overlay"></div>
-  <aside id="detail-panel" role="dialog" aria-labelledby="detail-title" aria-hidden="true">
-    <button id="detail-close" type="button">← Close</button>
-    <div id="detail-photo" hidden></div>
-    <div id="detail-eyebrow"></div>
-    <h3 id="detail-title"></h3>
-    <p id="detail-sub"></p>
-    <div id="detail-body"></div>
-    <div id="detail-alibi" hidden></div>
-    <div class="suspicion-meter" id="detail-suspicion" hidden></div>
-  </aside>
-
-  <section class="about" id="about">
-    <h2>About</h2>
-    <p>Wewaked is a personal blog about tech, life, and gaming. Written by one person, at odd hours, about whatever feels worth writing about.</p>
-  </section>
-
-  <section class="admin" id="admin" hidden>
-    <h2>Admin</h2>
-    <form id="admin-form">
-      <label>GitHub token
-        <input id="post-token" type="password" placeholder="Personal access token (repo scope)" autocomplete="off" />
-      </label>
-      <label>Tag
-        <input id="post-tag" type="text" list="tags" placeholder="e.g. Tech" required />
-      </label>
-      <datalist id="tags">
-        <option value="Tech"></option>
-        <option value="Gaming"></option>
-        <option value="Life"></option>
-      </datalist>
-      <label>Date
-        <input id="post-date" type="date" required />
-      </label>
-      <label>Title
-        <input id="post-title" type="text" placeholder="Post title" required />
-      </label>
-      <label>Excerpt
-        <textarea id="post-excerpt" placeholder="Short summary shown on the homepage" required></textarea>
-      </label>
-      <button class="nav-btn" type="submit">Publish post</button>
-      <p class="admin-status" id="admin-status"></p>
-    </form>
-  </section>
-
-  <footer>
-    <span>© 2026 Wewaked</span>
-    <div class="footer-links">
-      <a href="https://www.linkedin.com/in/vivek-darapu/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <a href="https://github.com/darapuvivek" target="_blank" rel="noopener noreferrer">GitHub</a>
+  <div class="scrim" id="scrim">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <span class="verdict-tag" id="verdict-tag"></span>
+      <h3 id="modal-title"></h3>
+      <div id="modal-body"></div>
+      <div class="modal-actions">
+        <button class="action primary" id="modal-close" type="button">Close</button>
+        <button class="action" id="modal-restart" type="button">Start over</button>
+      </div>
     </div>
-  </footer>
+  </div>
 
   <script src="case-data.js"></script>
   <script src="https://cdn.auth0.com/js/auth0-spa-js/2.18/auth0-spa-js.production.js"></script>
@@ -867,279 +690,535 @@
     const AUTH0_CLIENT_ID = 'QqcwVFTUfFIDvOkXKLmwAkFFUBu20LOZ';
 
     const $ = id => document.getElementById(id);
-    const setHidden = (id, hidden) => { $(id).hidden = hidden; };
 
-    /* ── Dust motes ── */
-    (() => {
-      const canvas = $('dust');
-      const ctx = canvas.getContext('2d');
-      let motes = [];
-      const MOTE_COUNT = Math.min(140, Math.max(60, Math.floor(window.innerWidth / 10)));
+    /* ══════════════════════════════════ characters (pure SVG, no assets) */
+    function buildFigure(a, mood) {
+      const { skin, shade, hair, hairStyle, cloth, clothDark, shirt, build } = a;
 
-      function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-      function spawnMotes() {
-        motes = Array.from({ length: MOTE_COUNT }, () => ({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          r: Math.random() * 1.3 + 0.3,
-          tw: Math.random() * Math.PI * 2,
-          speed: Math.random() * 0.02 + 0.004,
-          fall: Math.random() * 0.12 + 0.02,
-          drift: Math.random() * 0.08 - 0.04,
-        }));
-      }
-      function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (const m of motes) {
-          m.tw += m.speed;
-          m.y += m.fall;
-          m.x += m.drift;
-          if (m.y > canvas.height + 2) m.y = -2;
-          if (m.x < -2) m.x = canvas.width + 2;
-          if (m.x > canvas.width + 2) m.x = -2;
-          const alpha = 0.15 + 0.35 * Math.abs(Math.sin(m.tw));
-          ctx.beginPath();
-          ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(232, 176, 75, ${alpha})`;
-          ctx.fill();
-        }
-        requestAnimationFrame(draw);
-      }
-      window.addEventListener('resize', () => { resize(); spawnMotes(); });
-      resize();
-      spawnMotes();
-      draw();
-    })();
+      const torso = {
+        broad: 'M6,240 C10,190 44,158 84,148 L136,148 C176,158 210,190 214,240 Z',
+        slim:  'M22,240 C26,194 54,164 88,154 L132,154 C166,164 194,194 198,240 Z',
+        soft:  'M14,240 C18,192 48,160 86,150 L134,150 C172,160 202,192 206,240 Z',
+      }[build] || 'M14,240 C18,192 48,160 86,150 L134,150 C172,160 202,192 206,240 Z';
 
-    /* ── Investigation room ── */
-    (() => {
-      const caseData = window.ACTIVE_CASE;
-      if (!caseData) return;
+      const hairShapes = {
+        slick: `<path d="M62,84 C62,44 82,26 110,26 C138,26 158,44 158,84 C150,60 132,48 110,48 C88,48 70,60 62,84 Z" fill="${hair}"/>
+                <path d="M104,30 C112,40 118,44 128,46" stroke="rgba(255,255,255,0.07)" stroke-width="2.5" fill="none"/>`,
+        bob:   `<path d="M58,86 C58,42 80,24 110,24 C140,24 162,42 162,86 L162,140 C156,132 152,116 152,96 C142,72 128,62 110,62 C92,62 78,72 68,96 C68,116 64,132 58,140 Z" fill="${hair}"/>`,
+        tied:  `<path d="M62,84 C62,44 82,26 110,26 C138,26 158,44 158,84 C150,58 132,46 110,46 C88,46 70,58 62,84 Z" fill="${hair}"/>
+                <ellipse cx="110" cy="34" rx="26" ry="13" fill="${hair}"/>
+                <ellipse cx="163" cy="96" rx="11" ry="17" fill="${hair}" opacity="0.92"/>`,
+      };
 
-      $('case-location').textContent = caseData.location;
-      $('case-title').textContent = caseData.title;
-      $('case-synopsis').textContent = caseData.synopsis;
+      const collar = {
+        broad: `<path d="M96,150 L110,178 L124,150 L142,158 L110,204 L78,158 Z" fill="${shirt}"/>
+                <path d="M96,150 L110,178 L124,150 L134,154 L110,192 L86,154 Z" fill="${clothDark}" opacity="0.35"/>`,
+        slim:  `<path d="M98,154 L110,176 L122,154 L134,161 L110,200 L86,161 Z" fill="${shirt}"/>
+                <circle cx="110" cy="206" r="3" fill="rgba(255,255,255,0.3)"/>`,
+        soft:  `<path d="M96,152 L110,172 L124,152 L136,159 L110,196 L84,159 Z" fill="${shirt}"/>
+                <rect x="104" y="200" width="12" height="3" rx="1.5" fill="rgba(255,255,255,0.18)"/>`,
+      }[build] || '';
 
-      $('dossier-victim').textContent = caseData.victim || caseData.title;
-      $('dossier-time').textContent = caseData.timeOfIncident || '';
-      $('dossier-narrative').textContent = caseData.narrative || caseData.synopsis;
+      const eye = (cx, flip) => `
+        <g>
+          <path d="M${cx - 10.5},96 Q${cx},88.5 ${cx + 10.5},96 Q${cx},103.5 ${cx - 10.5},96 Z" fill="#f4ede3"/>
+          <circle cx="${cx + (flip ? -0.4 : 0.4)}" cy="96.4" r="4.5" fill="#4a3428"/>
+          <circle cx="${cx + (flip ? -0.4 : 0.4)}" cy="96.4" r="2" fill="#120c08"/>
+          <circle cx="${cx - 1.6}" cy="94.6" r="1.3" fill="#fff" opacity="0.92"/>
+          <path class="lid" d="M${cx - 10.5},96 Q${cx},88.5 ${cx + 10.5},96 Q${cx},99.5 ${cx - 10.5},96 Z" fill="${skin}"/>
+          <path d="M${cx - 10.5},96 Q${cx},88.5 ${cx + 10.5},96" stroke="rgba(40,24,14,0.6)" stroke-width="1.5" fill="none"/>
+          <path d="M${cx - 10.5},96 Q${cx},103.5 ${cx + 10.5},96" stroke="rgba(40,24,14,0.22)" stroke-width="1" fill="none"/>
+        </g>`;
 
-      const evidenceLog = $('dossier-evidence');
-      caseData.evidence.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${item.name}.</strong> <span>${item.detail}</span>`;
-        evidenceLog.appendChild(li);
-      });
+      return `
+      <svg viewBox="0 0 220 240" class="mood-${mood}" role="img" aria-label="The suspect, seated across the table">
+        <defs>
+          <linearGradient id="fg-cloth" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${cloth}"/><stop offset="100%" stop-color="${clothDark}"/>
+          </linearGradient>
+          <radialGradient id="fg-face" cx="42%" cy="32%" r="72%">
+            <stop offset="0%" stop-color="${skin}"/><stop offset="100%" stop-color="${shade}"/>
+          </radialGradient>
+        </defs>
 
-      const suspectLog = $('dossier-suspects');
-      caseData.suspects.forEach(s => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${s.name}</strong> <span>— ${s.role}. ${s.alibi}</span>`;
-        suspectLog.appendChild(li);
-      });
+        <g class="fig-breathe">
+          <path d="${torso}" fill="url(#fg-cloth)"/>
+          <path d="${torso}" fill="rgba(0,0,0,0.28)" style="clip-path: inset(0 0 0 62%)"/>
+          ${collar}
 
-      const deskScene = $('desk-scene');
-      const deskTilt = $('desk-tilt');
-      const positions = [
-        { top: '8%', left: '10%' }, { top: '4%', left: '32%' },
-        { top: '10%', right: '30%' }, { top: '4%', right: '10%' },
-        { top: '30%', left: '20%' }, { top: '28%', right: '18%' },
-        { top: '32%', left: '48%' },
-      ];
+          <path d="M94,132 L126,132 L126,158 L94,158 Z" fill="${shade}"/>
+          <ellipse cx="110" cy="136" rx="17" ry="7" fill="rgba(0,0,0,0.22)"/>
 
-      caseData.evidence.forEach((item, i) => {
-        const pos = positions[i % positions.length];
+          <g class="fig-head">
+            <ellipse cx="64" cy="98" rx="7.5" ry="13" fill="${shade}"/>
+            <ellipse cx="156" cy="98" rx="7.5" ry="13" fill="${shade}"/>
+
+            <path d="M110,40 C138,40 156,60 156,92 C156,114 147,134 132,145 C124,151 117,154 110,154
+                     C103,154 96,151 88,145 C73,134 64,114 64,92 C64,60 82,40 110,40 Z" fill="url(#fg-face)"/>
+
+            <path class="brow-l" d="M81,81 Q92,75.5 103,80" stroke="${hair}" stroke-width="4.2" stroke-linecap="round" fill="none" style="transform-box:fill-box;transform-origin:center"/>
+            <path class="brow-r" d="M117,80 Q128,75.5 139,81" stroke="${hair}" stroke-width="4.2" stroke-linecap="round" fill="none" style="transform-box:fill-box;transform-origin:center"/>
+
+            ${eye(92, false)}
+            ${eye(128, true)}
+
+            <path d="M110,96 L104,120 Q110,124 116,120 Z" fill="${shade}" opacity="0.65"/>
+            <ellipse cx="110" cy="121" rx="6" ry="2.4" fill="rgba(0,0,0,0.18)"/>
+
+            <g class="mouth-shape" style="transform-box:fill-box;transform-origin:center">
+              <path d="M96,136 Q110,131 124,136 Q110,142 96,136 Z" fill="#7d4038" opacity="0.85"/>
+              <path d="M96,136 Q110,133 124,136" stroke="rgba(60,25,20,0.6)" stroke-width="1.4" fill="none"/>
+            </g>
+
+            ${hairShapes[hairStyle] || hairShapes.slick}
+
+            <ellipse class="sweat" cx="146" cy="88" rx="2.6" ry="3.6" fill="rgba(200,235,255,0.85)"/>
+          </g>
+        </g>
+      </svg>`;
+    }
+
+    /* ══════════════════════════════════ desk props (pure SVG) */
+    const PROPS = {
+      folder: { label: 'Case file', kind: 'flat', x: 34, y: 44, svg: `
+        <svg width="176" height="129" viewBox="0 0 128 94">
+          <path d="M6,16 L52,16 L60,7 L120,7 A5,5 0 0 1 125,12 L125,86 A5,5 0 0 1 120,91 L6,91 A5,5 0 0 1 1,86 L1,21 A5,5 0 0 1 6,16 Z" fill="#c99b52"/>
+          <rect x="14" y="20" width="98" height="60" rx="2" fill="#f2ece0"/>
+          <rect x="22" y="28" width="60" height="3.5" rx="1.75" fill="#b8b0a2"/>
+          <rect x="22" y="38" width="78" height="2.6" rx="1.3" fill="#cfc8ba"/>
+          <rect x="22" y="46" width="72" height="2.6" rx="1.3" fill="#cfc8ba"/>
+          <rect x="22" y="54" width="80" height="2.6" rx="1.3" fill="#cfc8ba"/>
+          <rect x="22" y="62" width="46" height="2.6" rx="1.3" fill="#cfc8ba"/>
+          <path d="M2,30 L126,30 L126,88 A5,5 0 0 1 121,93 L7,93 A5,5 0 0 1 2,88 Z" fill="#d9a85c"/>
+          <text x="64" y="70" font-family="-apple-system,sans-serif" font-size="9" font-weight="700" fill="#7a5622" text-anchor="middle" letter-spacing="1.4">MARCHETTI</text>
+        </svg>` },
+
+      phone: { label: 'Call the lab', kind: 'stand', x: 74, y: 44, svg: `
+        <svg width="150" height="102" viewBox="0 0 112 76">
+          <path d="M12,74 L100,74 A7,7 0 0 0 107,67 L104,40 A7,7 0 0 0 97,34 L15,34 A7,7 0 0 0 8,40 L5,67 A7,7 0 0 0 12,74 Z" fill="#1e2024"/>
+          <path d="M12,74 L100,74 A7,7 0 0 0 107,67 L106,60 L6,60 L5,67 A7,7 0 0 0 12,74 Z" fill="#141619"/>
+          <circle cx="56" cy="49" r="12.5" fill="#2b2e33"/><circle cx="56" cy="49" r="8.5" fill="#111316"/>
+          <circle cx="56" cy="41" r="1.6" fill="#5c6067"/><circle cx="63" cy="45" r="1.6" fill="#5c6067"/>
+          <circle cx="63" cy="53" r="1.6" fill="#5c6067"/><circle cx="56" cy="57" r="1.6" fill="#5c6067"/>
+          <circle cx="49" cy="53" r="1.6" fill="#5c6067"/><circle cx="49" cy="45" r="1.6" fill="#5c6067"/>
+          <path d="M14,26 Q56,4 98,26 L92,34 Q56,16 20,34 Z" fill="#26292e"/>
+          <ellipse cx="17" cy="29" rx="10" ry="8" fill="#33373d"/><ellipse cx="95" cy="29" rx="10" ry="8" fill="#33373d"/>
+          <ellipse cx="17" cy="29" rx="5" ry="4" fill="#15171a"/><ellipse cx="95" cy="29" rx="5" ry="4" fill="#15171a"/>
+        </svg>` },
+
+      notepad: { label: 'Your notes', kind: 'flat', x: 41, y: 63, svg: `
+        <svg width="124" height="151" viewBox="0 0 92 112">
+          <rect x="4" y="6" width="84" height="102" rx="4" fill="#0f0f11" opacity="0.4"/>
+          <rect x="2" y="2" width="84" height="102" rx="4" fill="#f7f4ec"/>
+          <rect x="2" y="2" width="84" height="13" rx="4" fill="#d8d2c4"/>
+          <circle cx="18" cy="8.5" r="2.6" fill="#9a9384"/><circle cx="44" cy="8.5" r="2.6" fill="#9a9384"/><circle cx="70" cy="8.5" r="2.6" fill="#9a9384"/>
+          <g stroke="#c9c2b2" stroke-width="1.5">
+            <line x1="11" y1="30" x2="77" y2="30"/><line x1="11" y1="42" x2="77" y2="42"/>
+            <line x1="11" y1="54" x2="77" y2="54"/><line x1="11" y1="66" x2="77" y2="66"/>
+            <line x1="11" y1="78" x2="77" y2="78"/><line x1="11" y1="90" x2="77" y2="90"/>
+          </g>
+          <path d="M14,26 q10,-4 18,1 t16,-2" stroke="#2f3d55" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M14,38 q14,-5 24,2 t20,-3" stroke="#2f3d55" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M14,50 q9,-4 15,1" stroke="#2f3d55" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <rect x="60" y="70" width="42" height="7" rx="3.5" transform="rotate(-24 60 70)" fill="#1c2b45"/>
+          <path d="M60,70 l-7,2.5 l2,-7 Z" transform="rotate(-24 60 70)" fill="#c9a227"/>
+        </svg>` },
+
+      cigarettes: { label: 'Cigarettes', kind: 'stand', x: 57, y: 64, svg: `
+        <svg width="80" height="97" viewBox="0 0 58 70">
+          <path d="M8,68 L44,68 A4,4 0 0 0 48,64 L48,22 A4,4 0 0 0 44,18 L8,18 A4,4 0 0 0 4,22 L4,64 A4,4 0 0 0 8,68 Z" fill="#8d2b28"/>
+          <path d="M4,30 L48,30 L48,22 A4,4 0 0 0 44,18 L8,18 A4,4 0 0 0 4,22 Z" fill="#6f1f1d"/>
+          <rect x="11" y="38" width="30" height="3" rx="1.5" fill="rgba(255,255,255,0.5)"/>
+          <rect x="11" y="45" width="22" height="2.4" rx="1.2" fill="rgba(255,255,255,0.28)"/>
+          <rect x="30" y="4" width="9" height="21" rx="2" fill="#f4f1e8"/>
+          <rect x="30" y="17" width="9" height="8" rx="1.5" fill="#c8a86b"/>
+          <rect x="41" y="7" width="9" height="20" rx="2" fill="#f4f1e8" transform="rotate(12 41 7)"/>
+          <rect x="41" y="19" width="9" height="8" rx="1.5" fill="#c8a86b" transform="rotate(12 41 7)"/>
+        </svg>` },
+
+      glass: { label: 'Water', kind: 'stand', x: 64, y: 62, svg: `
+        <svg width="70" height="97" viewBox="0 0 52 72">
+          <path d="M11,6 L41,6 L37,66 A4,4 0 0 1 33,70 L19,70 A4,4 0 0 1 15,66 Z" fill="rgba(190,225,245,0.16)" stroke="rgba(215,240,255,0.5)" stroke-width="1.6"/>
+          <path d="M14,30 L38,30 L35.6,64 A3,3 0 0 1 32.6,67 L19.4,67 A3,3 0 0 1 16.4,64 Z" fill="rgba(120,190,235,0.42)"/>
+          <ellipse cx="26" cy="30" rx="12" ry="2.6" fill="rgba(215,245,255,0.6)"/>
+          <path d="M17,12 L19,62" stroke="rgba(255,255,255,0.45)" stroke-width="2.4" stroke-linecap="round"/>
+          <ellipse cx="26" cy="70" rx="13" ry="3" fill="rgba(0,0,0,0.3)"/>
+        </svg>` },
+
+      recorder: { label: 'On the record', kind: 'flat', x: 52, y: 29, svg: `
+        <svg width="140" height="83" viewBox="0 0 104 62">
+          <rect x="2" y="4" width="100" height="55" rx="7" fill="#232529"/>
+          <rect x="2" y="4" width="100" height="26" rx="7" fill="#2c2f34"/>
+          <circle class="reel" cx="31" cy="24" r="13" fill="#16181b" stroke="#43474d" stroke-width="2.5"/>
+          <circle class="reel" cx="73" cy="24" r="13" fill="#16181b" stroke="#43474d" stroke-width="2.5" style="animation-direction:reverse"/>
+          <circle cx="31" cy="24" r="3.4" fill="#5b6068"/>
+          <circle cx="73" cy="24" r="3.4" fill="#5b6068"/>
+          <rect x="14" y="43" width="34" height="8" rx="3" fill="#15171a"/>
+          <circle cx="86" cy="47" r="4.6" fill="#ff453a"><animate attributeName="opacity" values="1;0.25;1" dur="2s" repeatCount="indefinite"/></circle>
+        </svg>` },
+
+      lamp: { label: 'Desk lamp', kind: 'stand', x: 27, y: 31, svg: `
+        <svg width="104" height="142" viewBox="0 0 76 104">
+          <ellipse cx="30" cy="98" rx="24" ry="6" fill="#1a1c1f"/>
+          <rect x="27" y="42" width="5" height="56" rx="2.5" fill="#2b2e33"/>
+          <path d="M18,44 L58,44 L70,10 L36,10 Z" fill="#2f3338"/>
+          <path d="M18,44 L58,44 L64,26 L26,26 Z" fill="#3a3f45"/>
+          <ellipse cx="38" cy="44" rx="20" ry="5" fill="#ffcf7a"/>
+          <ellipse cx="38" cy="46" rx="30" ry="9" fill="rgba(255,179,64,0.32)"/>
+        </svg>` },
+    };
+
+    /* ══════════════════════════════════ game state */
+    const C = window.CASE;
+    const state = {
+      active: C.suspects[0].id,
+      unlocked: new Set(C.evidence.filter(e => e.source === 'file').map(e => e.id)),
+      labIndex: 0,
+      dim: false,
+      per: {},
+      pool: [],
+    };
+    C.suspects.forEach(s => {
+      state.per[s.id] = { composure: 78, rapport: 0, asked: new Set(), broken: false, offers: {}, opened: false };
+    });
+    const labQueue = C.evidence.filter(e => e.source === 'lab');
+    const suspectOf = id => C.suspects.find(s => s.id === id);
+
+    /* ── static content */
+    $('case-title').textContent = C.title;
+    $('case-sub').textContent = C.subtitle;
+    $('case-briefing').textContent = C.briefing;
+    $('chip-victim').textContent = C.victim;
+    $('chip-found').textContent = C.found;
+    $('chip-weapon').textContent = C.weapon;
+    $('timeline').innerHTML = C.timeline
+      .map(t => `<div class="tl-row"><span class="tl-time"></span><span class="tl-event"></span></div>`).join('');
+    document.querySelectorAll('#timeline .tl-row').forEach((row, i) => {
+      row.querySelector('.tl-time').textContent = C.timeline[i].time;
+      row.querySelector('.tl-event').textContent = C.timeline[i].event;
+    });
+
+    /* ── desk props */
+    function renderProps() {
+      const plane = $('desk-plane');
+      plane.innerHTML = '';
+      Object.entries(PROPS).forEach(([key, p]) => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'desk-item';
-        btn.style.top = pos.top;
-        if (pos.left) btn.style.left = pos.left;
-        if (pos.right) btn.style.right = pos.right;
-        btn.style.animationDelay = `${(i * 0.35).toFixed(2)}s`;
-        btn.innerHTML = `<span class="shape ${item.shape}" aria-hidden="true"></span><span class="item-label">${item.name}</span>`;
-        btn.addEventListener('click', () => openDetail({
-          eyebrow: 'Evidence',
-          title: item.name,
-          sub: '',
-          body: item.detail,
-        }));
-        deskTilt.appendChild(btn);
+        btn.className = `prop ${p.kind}`;
+        btn.style.left = p.x + '%';
+        btn.style.top = p.y + '%';
+        btn.dataset.prop = key;
+        btn.innerHTML = p.svg + `<span class="prop-label">${p.label}</span>`;
+        btn.addEventListener('click', () => onProp(key));
+        plane.appendChild(btn);
       });
+      refreshPhoneAlert();
+    }
+    function refreshPhoneAlert() {
+      const phone = document.querySelector('[data-prop="phone"]');
+      if (phone) phone.classList.toggle('alert', state.labIndex < labQueue.length);
+    }
 
-      // 3D parallax tilt: the desk surface tracks the cursor for a sense of depth.
-      deskScene.addEventListener('pointermove', e => {
-        const rect = deskScene.getBoundingClientRect();
-        const px = (e.clientX - rect.left) / rect.width - 0.5;
-        const py = (e.clientY - rect.top) / rect.height - 0.5;
-        deskTilt.style.transform = `rotateX(${(-py * 8).toFixed(2)}deg) rotateY(${(px * 10).toFixed(2)}deg)`;
-      });
-      deskScene.addEventListener('pointerleave', () => {
-        deskTilt.style.transform = 'rotateX(0deg) rotateY(0deg)';
-      });
-
-      // Animated vector portraits — built entirely in SVG/CSS, no external
-      // images. "delay" staggers each character's blink so they don't
-      // all blink in sync.
-      function buildPortraitSVG(avatar, delay) {
-        const { skin, hair, hairStyle, clothing, clothingType, expression } = avatar;
-
-        const hairShapes = {
-          short: `<path d="M31,30 Q32,12 50,11 Q68,12 69,30 Q69,22 50,20 Q31,22 31,30 Z" fill="${hair}"/>
-                  <rect x="29" y="30" width="3" height="10" rx="1.5" fill="${hair}"/>
-                  <rect x="68" y="30" width="3" height="10" rx="1.5" fill="${hair}"/>`,
-          bob: `<path d="M29,32 Q30,11 50,10 Q70,11 71,32 L71,60 Q65,50 64,34 Q57,27 50,27 Q43,27 36,34 Q35,50 29,60 Z" fill="${hair}"/>`,
-          slick: `<path d="M30,31 Q32,13 50,12 Q68,13 70,31 Q59,19 50,19 Q41,19 30,31 Z" fill="${hair}"/>
-                  <line x1="46" y1="13" x2="44" y2="22" stroke="rgba(0,0,0,0.35)" stroke-width="1"/>`,
-        };
-        const browShapes = {
-          stern: `<path d="M36,38 L45,40" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>
-                  <path d="M55,40 L64,38" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>`,
-          sharp: `<path d="M36,39 L45,39" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>
-                  <path d="M55,37 L64,34" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>`,
-          nervous: `<path d="M36,40 L45,37" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>
-                    <path d="M55,37 L64,40" stroke="${hair}" stroke-width="2.2" stroke-linecap="round"/>`,
-        };
-        const mouthShapes = {
-          stern: `<path d="M41,61 Q50,57 59,61" stroke="#6b3d34" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
-          sharp: `<path d="M42,60 L58,60" stroke="#6b3d34" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
-          nervous: `<path d="M42,62 Q50,59 58,62" stroke="#6b3d34" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
-        };
-        const clothingExtra = clothingType === 'uniform'
-          ? `<path d="M42,68 L50,74 L58,68 L58,72 L50,78 L42,72 Z" fill="rgba(255,255,255,0.12)"/>
-             <circle cx="38" cy="82" r="3" fill="#e8b04b" opacity="0.85"/>`
-          : `<path d="M40,66 L50,76 L46,100 L50,100 L50,78 L54,100 L58,100 L54,76 L60,66 Z" fill="rgba(0,0,0,0.18)"/>
-             <circle cx="50" cy="80" r="1.4" fill="rgba(255,255,255,0.4)"/>`;
-        const eye = cx => `
-          <ellipse cx="${cx}" cy="42" rx="5.4" ry="3.3" fill="#f2e8d8"/>
-          <circle cx="${cx}" cy="42" r="2.2" fill="#3b2a1d"/>
-          <circle cx="${cx - 0.6}" cy="41.3" r="0.6" fill="#fff" opacity="0.8"/>
-          <rect class="portrait-eyelid" x="${cx - 5.4}" y="38.7" width="10.8" height="6.6" fill="${skin}" style="animation-delay:${delay}s"/>
-        `;
-
-        return `<svg viewBox="0 0 100 100" role="img" aria-label="Illustrated portrait">
-          <g class="portrait-sway">
-            <path d="M8,100 Q10,74 30,66 Q40,72 50,72 Q60,72 70,66 Q90,74 92,100 Z" fill="${clothing}"/>
-            ${clothingExtra}
-            <rect x="42" y="58" width="16" height="14" rx="3" fill="${skin}"/>
-            <ellipse cx="31" cy="47" rx="3.2" ry="6" fill="${skin}"/>
-            <ellipse cx="69" cy="47" rx="3.2" ry="6" fill="${skin}"/>
-            <ellipse cx="50" cy="46" rx="18" ry="21" fill="${skin}"/>
-            ${hairShapes[hairStyle] || hairShapes.short}
-            ${browShapes[expression] || browShapes.stern}
-            ${eye(40)}
-            ${eye(60)}
-            <path d="M50,44 L48.5,53 Q50,54.5 51.5,53 Z" fill="rgba(0,0,0,0.18)"/>
-            ${mouthShapes[expression] || mouthShapes.stern}
-          </g>
-        </svg>`;
+    function onProp(key) {
+      if (key === 'phone') return callLab();
+      if (key === 'cigarettes') return offer('cigarette');
+      if (key === 'glass') return offer('water');
+      if (key === 'lamp') {
+        state.dim = !state.dim;
+        $('room-el').classList.toggle('dimmed', state.dim);
+        return say(null, state.dim ? 'You kill the overheads. Only the desk lamp now.' : 'You bring the lights back up.', true);
       }
+      if (key === 'folder') { $('casefile').scrollIntoView({ behavior: 'smooth' }); return; }
+      if (key === 'notepad') { $('transcript').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      if (key === 'recorder') return say(null, 'The reels are turning. Everything said in this room is on the tape.', true);
+    }
 
-      const suspectGrid = $('suspect-grid');
-      caseData.suspects.forEach((s, i) => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'suspect-card';
-        card.innerHTML = `
-          <div class="suspect-portrait">${buildPortraitSVG(s.avatar, (i * 1.4).toFixed(2))}</div>
-          <div class="suspect-name">${s.name}</div>
-          <div class="suspect-role">${s.role}</div>
-          <div class="suspect-tag">Person of interest</div>
-        `;
-        card.addEventListener('click', () => openDetail({
-          eyebrow: s.role,
-          title: s.name,
-          avatar: s.avatar,
-          body: s.statement,
-          alibi: s.alibi,
-          suspicion: s.suspicion,
-        }));
-        suspectGrid.appendChild(card);
+    function callLab() {
+      if (state.labIndex >= labQueue.length) {
+        return say(null, 'The lab has given you everything they have. The rest is in this room.', true);
+      }
+      const ev = labQueue[state.labIndex++];
+      state.unlocked.add(ev.id);
+      say(null, `Lab on the line — ${ev.name}. Added to evidence.`, true);
+      renderEvidence(); renderQuestions(); refreshPhoneAlert();
+    }
+
+    /* ── suspect tabs */
+    function renderTabs() {
+      const bar = $('suspect-bar');
+      bar.innerHTML = '';
+      C.suspects.forEach(s => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'suspect-tab';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-selected', String(s.id === state.active));
+        b.innerHTML = `<span class="tab-dot" style="background:${s.avatar.cloth}"></span>
+                       <span><span class="tab-name"></span><br><span class="tab-role"></span></span>`;
+        b.querySelector('.tab-name').textContent = s.name;
+        b.querySelector('.tab-role').textContent = s.role;
+        b.addEventListener('click', () => switchTo(s.id));
+        bar.appendChild(b);
       });
+    }
 
-      function openDetail({ eyebrow, title, sub, body, avatar, alibi, suspicion }) {
-        $('detail-eyebrow').textContent = eyebrow || '';
-        $('detail-title').textContent = title || '';
-        $('detail-sub').textContent = sub || '';
-        $('detail-body').textContent = body || '';
+    function moodFor(id) {
+      const p = state.per[id];
+      if (p.broken) return 'broken';
+      return p.composure < 48 ? 'tense' : 'calm';
+    }
 
-        const photoEl = $('detail-photo');
-        if (avatar) {
-          photoEl.innerHTML = buildPortraitSVG(avatar, '0');
-          photoEl.hidden = false;
-        } else {
-          photoEl.innerHTML = '';
-          photoEl.hidden = true;
+    function renderFigure() {
+      const s = suspectOf(state.active);
+      const stage = $('suspect-stage');
+      stage.classList.add('swapping');
+      setTimeout(() => {
+        stage.innerHTML = '<div class="chair-back" aria-hidden="true"></div>' + buildFigure(s.avatar, moodFor(s.id));
+        stage.classList.remove('swapping');
+      }, 180);
+    }
+
+    function switchTo(id) {
+      if (id === state.active) return;
+      state.active = id;
+      pressCount = 0;
+      renderTabs(); renderFigure(); newPool(); renderQuestions(); renderComposure();
+      const s = suspectOf(id);
+      const p = state.per[id];
+      $('transcript').innerHTML = '';
+      say(null, `${s.name} sits down across the desk.`, true);
+      if (!p.opened) { p.opened = true; }
+      setTimeout(() => say(null, s.opening), 340);
+      syncOfferButtons();
+    }
+
+    /* ── questions */
+    function availableQuestions() {
+      const s = suspectOf(state.active);
+      const p = state.per[state.active];
+      return s.questions.filter(q =>
+        !p.asked.has(q.id) &&
+        (!q.requires || state.unlocked.has(q.requires)) &&
+        (!q.rapport || p.rapport >= q.rapport)
+      );
+    }
+    function newPool() {
+      const avail = availableQuestions();
+      state.pool = avail.slice().sort(() => Math.random() - 0.5).slice(0, 4).map(q => q.id);
+    }
+    function renderQuestions() {
+      const grid = $('q-grid');
+      const s = suspectOf(state.active);
+      const avail = availableQuestions();
+      state.pool = state.pool.filter(id => avail.some(q => q.id === id));
+      while (state.pool.length < 4) {
+        const next = avail.find(q => !state.pool.includes(q.id));
+        if (!next) break;
+        state.pool.push(next.id);
+      }
+      grid.innerHTML = '';
+      if (!state.pool.length) {
+        const d = document.createElement('div');
+        d.className = 'ev-locked';
+        d.textContent = 'Nothing left to ask them — until you turn up something new.';
+        grid.appendChild(d);
+        return;
+      }
+      state.pool.forEach(id => {
+        const q = s.questions.find(x => x.id === id);
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'q-btn';
+        b.textContent = q.text;
+        b.addEventListener('click', () => ask(q));
+        grid.appendChild(b);
+      });
+    }
+
+    function ask(q) {
+      const p = state.per[state.active];
+      p.asked.add(q.id);
+      state.pool = state.pool.filter(id => id !== q.id);
+      adjustComposure(-(q.tension || 4));
+      say(q.text, q.answer);
+      (q.reveals || []).forEach(id => {
+        if (!state.unlocked.has(id)) {
+          state.unlocked.add(id);
+          setTimeout(() => say(null, `New in evidence: ${C.evidence.find(e => e.id === id).name}.`, true), 420);
         }
+      });
+      maybeBreak();
+      renderQuestions(); renderEvidence();
+    }
 
-        const alibiEl = $('detail-alibi');
-        if (alibi) { alibiEl.innerHTML = `<strong>Alibi check:</strong> ${alibi}`; alibiEl.hidden = false; }
-        else { alibiEl.hidden = true; }
+    function adjustComposure(delta) {
+      const p = state.per[state.active];
+      const before = moodFor(state.active);
+      p.composure = Math.max(0, Math.min(100, p.composure + delta));
+      renderComposure();
+      if (moodFor(state.active) !== before) renderFigure();
+    }
 
-        const meterEl = $('detail-suspicion');
-        if (suspicion) {
-          meterEl.innerHTML = Array.from({ length: 5 }, (_, i) =>
-            `<span class="${i < suspicion ? 'filled' : ''}"></span>`).join('');
-          meterEl.hidden = false;
-        } else { meterEl.hidden = true; }
+    function maybeBreak() {
+      const s = suspectOf(state.active);
+      const p = state.per[state.active];
+      if (p.broken || p.composure > 22) return;
+      p.broken = true;
+      setTimeout(() => {
+        say(null, s.breakLine);
+        (s.breakReveals || []).forEach(id => {
+          if (!state.unlocked.has(id)) {
+            state.unlocked.add(id);
+            setTimeout(() => say(null, `New in evidence: ${C.evidence.find(e => e.id === id).name}.`, true), 500);
+          }
+        });
+        renderFigure(); renderEvidence(); renderQuestions();
+      }, 700);
+    }
 
-        $('detail-panel').classList.add('show');
-        $('detail-panel').setAttribute('aria-hidden', 'false');
-        $('detail-overlay').classList.add('show');
+    function renderComposure() {
+      const p = state.per[state.active];
+      const fill = $('composure-fill');
+      fill.style.width = p.composure + '%';
+      fill.style.background = p.composure > 60 ? 'var(--green)' : p.composure > 30 ? 'var(--amber)' : 'var(--red)';
+      $('composure-val').textContent =
+        p.broken ? 'Broken' : p.composure > 60 ? 'Composed' : p.composure > 30 ? 'Rattled' : 'Close to it';
+    }
+
+    /* ── dialogue + transcript */
+    function say(question, answer, system = false) {
+      const d = $('dialogue');
+      $('dialogue-q').textContent = question || (system ? '' : suspectOf(state.active).name);
+      $('dialogue-a').textContent = answer;
+      d.classList.add('show');
+
+      const t = $('transcript');
+      if (question) {
+        const q = document.createElement('div');
+        q.className = 'line-q'; q.textContent = 'You — ' + question;
+        t.appendChild(q);
       }
-      function closeDetail() {
-        $('detail-panel').classList.remove('show');
-        $('detail-panel').setAttribute('aria-hidden', 'true');
-        $('detail-overlay').classList.remove('show');
-      }
-      $('detail-close').addEventListener('click', closeDetail);
-      $('detail-overlay').addEventListener('click', closeDetail);
-      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
-    })();
+      const a = document.createElement('div');
+      a.className = system ? 'line-sys' : 'line-a';
+      a.textContent = answer;
+      t.appendChild(a);
+      t.scrollTop = t.scrollHeight;
+    }
 
-    /* ── Auth0 ── */
+    /* ── offers, press, shuffle */
+    function offer(kind) {
+      const s = suspectOf(state.active);
+      const p = state.per[state.active];
+      if (p.offers[kind]) return;
+      p.offers[kind] = true;
+      p.rapport += 1;
+      adjustComposure(+16);
+      say(kind === 'cigarette' ? 'You slide the pack across the table.' : 'You pour a glass and set it down.', s.offers[kind]);
+      syncOfferButtons(); renderQuestions();
+    }
+    function syncOfferButtons() {
+      const p = state.per[state.active];
+      $('btn-cig').disabled = !!p.offers.cigarette;
+      $('btn-water').disabled = !!p.offers.water;
+    }
+
+    // Pressing repeatedly shouldn't reprint the same paragraph — the suspect's
+    // own line lands first, then the room does the work.
+    const PRESS_BEATS = [
+      'You say nothing. The tape keeps turning. They look at the table, then at the door, then back at the table.',
+      'You read the file again, slowly, in front of them. They watch you do it and say nothing at all.',
+      'You let it run long past comfortable. Somewhere in the building a door closes. They flinch at it.',
+      'You repeat the last question, word for word, in exactly the same tone. It lands differently the second time.',
+    ];
+    let pressCount = 0;
+    $('btn-press').addEventListener('click', () => {
+      const s = suspectOf(state.active);
+      adjustComposure(-15);
+      if (pressCount === 0) say('You let the silence sit, then lean in.', s.press);
+      else say('You let the silence sit.', PRESS_BEATS[(pressCount - 1) % PRESS_BEATS.length], true);
+      pressCount++;
+      maybeBreak();
+    });
+    $('btn-shuffle').addEventListener('click', () => { newPool(); renderQuestions(); });
+    $('btn-cig').addEventListener('click', () => offer('cigarette'));
+    $('btn-water').addEventListener('click', () => offer('water'));
+
+    /* ── evidence */
+    function renderEvidence() {
+      const grid = $('ev-grid');
+      grid.innerHTML = '';
+      C.evidence.forEach(e => {
+        if (state.unlocked.has(e.id)) {
+          const c = document.createElement('div');
+          c.className = 'ev-card';
+          c.innerHTML = '<div class="ev-name"></div><div class="ev-detail"></div>';
+          c.querySelector('.ev-name').textContent = e.name;
+          c.querySelector('.ev-detail').textContent = e.detail;
+          grid.appendChild(c);
+        }
+      });
+      const remaining = C.evidence.length - state.unlocked.size;
+      if (remaining > 0) {
+        const l = document.createElement('div');
+        l.className = 'ev-locked';
+        l.textContent = `${remaining} more to find — chase the lab, or get someone to talk.`;
+        grid.appendChild(l);
+      }
+    }
+
+    /* ── accusation */
+    $('btn-accuse').addEventListener('click', () => {
+      const s = suspectOf(state.active);
+      const v = C.verdicts[s.id];
+      $('verdict-tag').textContent = v.correct ? 'Case closed' : 'Wrong call';
+      $('verdict-tag').className = 'verdict-tag ' + (v.correct ? 'right' : 'wrong');
+      $('modal-title').textContent = v.correct ? `You charge ${v.title}.` : `You charge ${v.title}. It does not hold.`;
+      const body = $('modal-body');
+      body.innerHTML = '';
+      v.body.forEach(par => { const p = document.createElement('p'); p.textContent = par; body.appendChild(p); });
+      if (!v.correct) {
+        const p = document.createElement('p');
+        p.textContent = 'Go back in. Somebody in that house went outside in the rain.';
+        body.appendChild(p);
+      }
+      $('scrim').classList.add('show');
+    });
+    $('modal-close').addEventListener('click', () => $('scrim').classList.remove('show'));
+    $('modal-restart').addEventListener('click', () => location.reload());
+    $('scrim').addEventListener('click', e => { if (e.target === $('scrim')) $('scrim').classList.remove('show'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') $('scrim').classList.remove('show'); });
+
+    /* ── boot */
+    renderProps(); renderTabs(); renderFigure(); newPool();
+    renderQuestions(); renderComposure(); renderEvidence(); syncOfferButtons();
+    say(null, suspectOf(state.active).opening);
+
+    /* ══════════════════════════════════ auth0 */
     (async () => {
-      const loginBtn = $('btn-login');
-      const logoutBtn = $('btn-logout');
-      const userChip = $('user-chip');
-
-      // Show login as a safe default so the button never stays invisible
-      // if Auth0 fails to load (CDN blocked, ad-blocker, network hiccup).
-      setHidden('btn-login', false);
-
+      const loginBtn = $('btn-login'), logoutBtn = $('btn-logout'), userChip = $('user-chip');
+      loginBtn.hidden = false;   // safe default if the SDK never loads
       try {
         window.client = await auth0.createAuth0Client({
           domain: AUTH0_DOMAIN,
           clientId: AUTH0_CLIENT_ID,
           authorizationParams: { redirect_uri: location.origin + location.pathname },
         });
-
         if (location.search.includes('error=')) {
           const params = new URLSearchParams(location.search);
           alert(`Auth error: ${params.get('error_description') || params.get('error')}`);
           history.replaceState({}, '', location.pathname);
         }
-
         if (location.search.includes('code=') && location.search.includes('state=')) {
           await window.client.handleRedirectCallback();
           history.replaceState({}, '', location.pathname);
         }
-
         const isAuth = await window.client.isAuthenticated();
-        setHidden('btn-login', isAuth);
-        setHidden('btn-logout', !isAuth);
-
+        loginBtn.hidden = isAuth; logoutBtn.hidden = !isAuth;
         if (isAuth) {
           const user = await window.client.getUser();
-          userChip.textContent = user.email;
-          setHidden('user-chip', false);
-          if (user.email === ADMIN_EMAIL) {
-            adminSection.hidden = false;
-          }
+          userChip.textContent = user.email; userChip.hidden = false;
+          if (user.email === ADMIN_EMAIL) $('admin').hidden = false;
         }
-
         loginBtn.addEventListener('click', () => window.client.loginWithRedirect());
         logoutBtn.addEventListener('click', () => window.client.logout({ logoutParams: { returnTo: location.origin } }));
       } catch (err) {
@@ -1147,7 +1226,7 @@
       }
     })();
 
-    /* ── Admin publish ── */
+    /* ══════════════════════════════════ admin publish */
     $('admin-form').addEventListener('submit', async e => {
       e.preventDefault();
       const status = $('admin-status');
@@ -1155,39 +1234,32 @@
       const date = $('post-date').value;
       const title = $('post-title').value.trim();
       const excerpt = $('post-excerpt').value.trim();
+      const token = $('post-token').value.trim();
       if (!date) { status.textContent = 'Pick a date.'; return; }
+      if (!token) { status.textContent = 'Enter your GitHub token (repo scope).'; return; }
 
       status.textContent = 'Publishing…';
-      const token = $('post-token').value.trim();
-      if (!token) { status.textContent = 'Enter your GitHub token (repo scope).'; return; }
       const headers = { Accept: 'application/vnd.github+json', Authorization: `token ${token}` };
       const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/index.html`, { headers });
-      if (!getRes.ok) { status.textContent = 'Could not read repo — is it public?'; return; }
+      if (!getRes.ok) { status.textContent = 'Could not read the repo.'; return; }
       const file = await getRes.json();
       const b64ToUtf8 = b64 => decodeURIComponent(escape(atob(b64)));
       const utf8ToB64 = str => btoa(unescape(encodeURIComponent(str)));
       const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       const html = b64ToUtf8(file.content);
-
       const article = `
-    <article class="post-item">
-      <div class="post-meta">
-        <span class="post-tag">${tag}</span>
-        <time class="post-date" datetime="${date}">${new Date(date + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
-      </div>
-      <h3 class="post-title"><a href="/posts/${slugify(title)}">${title}</a></h3>
-      <p class="post-excerpt">${excerpt}</p>
-      <a class="read-more" href="/posts/${slugify(title)}">Read more</a>
-    </article>
-  `;
-
-      const updated = html.replace('</main>', article.trim() + '\n\n  </main>');
+    <article class="ev-card">
+      <div class="ev-name">${title}</div>
+      <div class="ev-detail">${excerpt}</div>
+      <p class="sub">${tag} · <time datetime="${date}">${new Date(date + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time> · <a href="/posts/${slugify(title)}">Read more</a></p>
+    </article>`;
+      const updated = html.replace('</main>', article + '\n  </main>');
       const putRes = await fetch(`https://api.github.com/repos/${REPO}/contents/index.html`, {
         method: 'PUT',
         headers: { ...headers, 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: `Add post: ${title}`, content: utf8ToB64(updated), sha: file.sha }),
       });
-      status.textContent = putRes.ok ? 'Published! The site will update shortly.' : `Publish failed (${putRes.status}).`;
+      status.textContent = putRes.ok ? 'Published. The site will update shortly.' : `Publish failed (${putRes.status}).`;
     });
   </script>
 
