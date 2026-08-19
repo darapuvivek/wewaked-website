@@ -1,0 +1,583 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#05140b" />
+<title>Squad Builder — Wewaked</title>
+<meta name="description" content="Pick a budget, pick a shape, spend the money. Drag players onto the pitch and share the finished side as a link." />
+<link rel="stylesheet" href="site.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E" />
+
+<style>
+body{background:#05100a;min-height:100vh}
+.bg{
+  position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(70% 50% at 50% -8%,rgba(48,209,88,.16),transparent 60%),
+    radial-gradient(50% 40% at 90% 100%,rgba(10,132,255,.10),transparent 62%),
+    #05100a;
+}
+
+.app{max-width:1280px;margin-inline:auto;padding:22px 22px 0;display:grid;gap:16px;grid-template-columns:1.15fr .85fr}
+@media(max-width:980px){.app{grid-template-columns:1fr;padding:16px 16px 0}}
+
+/* ── controls */
+.bar{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.bar-l,.bar-r{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;background:rgba(255,255,255,.06);border:1px solid var(--hair);border-radius:11px;padding:3px;gap:2px}
+.seg button{padding:6px 13px;border-radius:8px;font-size:12.5px;color:var(--text-2);transition:background .18s ease,color .18s ease}
+.seg button[aria-pressed="true"]{background:rgba(255,255,255,.13);color:var(--text);font-weight:560}
+
+.money{
+  display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);
+  border:1px solid var(--hair);border-radius:13px;padding:9px 14px;
+}
+.money-n{font-size:19px;font-weight:640;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.money-n.over{color:var(--red)}
+.money-sub{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.money-track{width:120px;height:6px;border-radius:3px;background:rgba(255,255,255,.13);overflow:hidden}
+.money-fill{display:block;height:100%;background:var(--green);transition:width .4s cubic-bezier(.2,.8,.25,1),background .3s ease}
+
+/* ── pitch */
+.pitch-wrap{position:relative}
+.pitch{
+  position:relative;width:min(100%,calc((100vh - 250px) * 0.72));margin-inline:auto;
+  aspect-ratio:72/100;border-radius:18px;overflow:hidden;
+  background:
+    repeating-linear-gradient(180deg,rgba(255,255,255,.030) 0 9%,transparent 9% 18%),
+    linear-gradient(175deg,#1a5c30 0%,#0e3a1e 100%);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 30px 70px -26px rgba(0,0,0,.9);
+}
+.pitch svg.lines{position:absolute;inset:0;width:100%;height:100%}
+
+.slot{
+  position:absolute;transform:translate(-50%,-50%);width:74px;
+  display:grid;justify-items:center;gap:4px;cursor:pointer;
+  transition:transform .18s cubic-bezier(.2,.8,.25,1);
+}
+.slot:hover{transform:translate(-50%,-50%) scale(1.06)}
+.slot.armed .shirt,.slot.over .shirt{border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,159,10,.28)}
+.shirt{
+  width:50px;height:50px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(0,0,0,.42);border:2px dashed rgba(255,255,255,.28);
+  font-size:11px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.04em;
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.slot.filled .shirt{
+  border-style:solid;border-color:rgba(255,255,255,.5);
+  background:linear-gradient(180deg,#2b6cff,#1a4bcc);
+  font-size:15px;font-weight:700;color:#fff;
+}
+.slot.filled.gk .shirt{background:linear-gradient(180deg,#ffb340,#e08600)}
+.slot-name{
+  font-size:10.5px;font-weight:600;letter-spacing:-.006em;text-align:center;line-height:1.2;
+  background:rgba(0,0,0,.55);padding:2px 6px;border-radius:5px;max-width:78px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.slot-val{font-size:9.5px;color:rgba(255,255,255,.62);font-variant-numeric:tabular-nums}
+.slot-x{
+  position:absolute;top:-4px;right:2px;width:17px;height:17px;border-radius:50%;
+  background:var(--red);color:#fff;font-size:11px;line-height:1;display:none;place-items:center;
+}
+.slot.filled:hover .slot-x{display:grid}
+
+.team-sum{
+  display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  margin-top:12px;padding:12px 14px;background:rgba(255,255,255,.05);
+  border:1px solid var(--hair);border-radius:13px;
+}
+.stat{display:grid;gap:1px}
+.stat b{font-size:18px;font-weight:640;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat span{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+
+/* ── market */
+.market{display:flex;flex-direction:column;gap:10px;min-height:0}
+.mk-tools{display:grid;gap:8px}
+.mk-row{display:flex;gap:8px;flex-wrap:wrap}
+.mk-row .field{flex:1;min-width:130px}
+select.field{appearance:none;background-image:linear-gradient(45deg,transparent 50%,rgba(235,235,245,.5) 50%),linear-gradient(135deg,rgba(235,235,245,.5) 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+select.field option{background:#1c1c1e;color:#f5f5f7}
+
+.plist{
+  display:grid;gap:6px;overflow-y:auto;max-height:min(560px,62vh);padding-right:4px;
+  overscroll-behavior:contain;
+}
+.pl{
+  display:grid;grid-template-columns:34px 1fr auto auto;gap:10px;align-items:center;
+  padding:8px 10px;border-radius:11px;text-align:left;width:100%;
+  background:rgba(255,255,255,.05);border:1px solid var(--hair);
+  cursor:grab;touch-action:none;
+  transition:background .16s ease,border-color .16s ease,transform .1s ease,opacity .16s ease;
+}
+.pl:hover:not(.picked){background:rgba(255,255,255,.10);border-color:var(--hair-2)}
+.pl:active{transform:scale(.995)}
+.pl.picked{opacity:.34;cursor:not-allowed}
+.pl.unaffordable{opacity:.48}
+.pl.dragging{opacity:.5}
+.pl-pos{
+  font-size:9.5px;font-weight:700;letter-spacing:.05em;text-align:center;
+  padding:3px 0;border-radius:5px;background:rgba(255,255,255,.10);color:var(--text-2);
+}
+.pl-pos.GK{background:rgba(255,159,10,.20);color:#ffc266}
+.pl-pos.DEF{background:rgba(10,132,255,.20);color:#7ab8ff}
+.pl-pos.MID{background:rgba(48,209,88,.18);color:#7ce49b}
+.pl-pos.FWD{background:rgba(255,69,58,.18);color:#ff8f86}
+.pl-n{font-size:13px;font-weight:560;letter-spacing:-.008em;line-height:1.25;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-c{font-size:10.5px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-r{font-size:12px;font-weight:640;font-variant-numeric:tabular-nums;color:var(--text-2);min-width:22px;text-align:right}
+.pl-v{font-size:12.5px;font-variant-numeric:tabular-nums;min-width:46px;text-align:right;font-weight:560}
+.pl-empty{font-size:13px;color:var(--text-3);padding:16px 4px;text-align:center}
+
+.hint{font-size:12px;color:var(--text-3);line-height:1.5}
+.disclaimer{font-size:11.5px;color:var(--text-3);line-height:1.55;margin-top:10px;max-width:70ch}
+.saved-list{display:grid;gap:7px;margin-top:12px}
+.saved{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--hair);font-size:13px}
+</style>
+
+<body>
+<header data-nav></header>
+<div class="bg" aria-hidden="true"></div>
+
+<main class="app">
+  <div class="bar">
+    <div class="bar-l">
+      <div class="seg" id="budgets" role="group" aria-label="Budget"></div>
+      <div class="seg" id="formations" role="group" aria-label="Formation"></div>
+    </div>
+    <div class="bar-r">
+      <div class="money">
+        <div>
+          <div class="money-n" id="left">£0m</div>
+          <div class="money-sub">Remaining</div>
+        </div>
+        <span class="money-track"><span class="money-fill" id="spent-bar"></span></span>
+      </div>
+      <button class="btn" id="autofill" type="button">Auto-pick</button>
+      <button class="btn" id="clear" type="button">Clear</button>
+      <button class="btn primary" id="share" type="button">Share</button>
+    </div>
+  </div>
+
+  <section class="pitch-wrap">
+    <div class="pitch" id="pitch">
+      <svg class="lines" viewBox="0 0 72 100" fill="none" preserveAspectRatio="none" aria-hidden="true">
+        <g stroke="rgba(255,255,255,.30)" stroke-width=".4">
+          <rect x="2" y="2" width="68" height="96"/>
+          <line x1="2" y1="50" x2="70" y2="50"/>
+          <circle cx="36" cy="50" r="9.5"/>
+          <rect x="16" y="2" width="40" height="14"/>
+          <rect x="26" y="2" width="20" height="6"/>
+          <rect x="16" y="84" width="40" height="14"/>
+          <rect x="26" y="92" width="20" height="6"/>
+        </g>
+        <circle cx="36" cy="50" r="1" fill="rgba(255,255,255,.3)"/>
+      </svg>
+      <div id="slots"></div>
+    </div>
+
+    <div class="team-sum">
+      <div class="stat"><b id="s-count">0/11</b><span>Picked</span></div>
+      <div class="stat"><b id="s-spend">£0m</b><span>Spent</span></div>
+      <div class="stat"><b id="s-rating">—</b><span>Avg rating</span></div>
+      <div class="stat"><b id="s-clubs">0</b><span>Clubs</span></div>
+      <input class="field" id="team-name" style="max-width:210px" placeholder="Name your side" maxlength="40" />
+      <button class="btn" id="save" type="button">Save side</button>
+    </div>
+
+    <p class="disclaimer">Valuations and ratings are invented for this game. They are not transfer fees, wages, or any real rating system — the names are real, the numbers are not.</p>
+    <div class="saved-list" id="saved"></div>
+  </section>
+
+  <section class="market panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <span class="ttl">Market</span>
+      <span class="hint" id="mk-count"></span>
+    </div>
+    <div class="mk-tools">
+      <input class="field" id="q" type="search" placeholder="Search a name or a club" />
+      <div class="mk-row">
+        <select class="field" id="f-pos" aria-label="Position">
+          <option value="">All positions</option>
+          <option value="GK">Goalkeepers</option>
+          <option value="DEF">Defenders</option>
+          <option value="MID">Midfielders</option>
+          <option value="FWD">Forwards</option>
+        </select>
+        <select class="field" id="f-sort" aria-label="Sort">
+          <option value="v-">Most expensive</option>
+          <option value="v+">Cheapest</option>
+          <option value="r-">Best rated</option>
+          <option value="n+">A to Z</option>
+        </select>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2)">
+        <input type="checkbox" id="f-afford" /> Only what I can still afford
+      </label>
+    </div>
+    <div class="plist" id="plist"></div>
+    <p class="hint">Drag a player onto a slot, or tap a slot then tap a player.</p>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <span>© 2026 Wewaked</span>
+  <div class="foot-links">
+    <a href="https://www.linkedin.com/in/vivek-darapu/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a href="https://github.com/darapuvivek" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </div>
+</footer>
+
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.18/auth0-spa-js.production.js"></script>
+<script src="site.js"></script>
+<script src="fantasy-data.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = WW.esc;
+const S = window.SQUAD;
+const byId = new Map(S.players.map(p => [p.i, p]));
+
+/* ══════════════════════════════════════════ slot geometry
+ * A formation is a list of band sizes back-to-front. The keeper is always
+ * slot 0; each outfield band is spread evenly across the width. */
+function slotsFor(formation){
+  const shape = S.formations.find(f => f.id === formation).shape;
+  const out = [{ pos:'GK', x:50, y:92 }];
+  const bandY = [78, 60, 40, 22];              // deepest band first
+  const kinds = shape.length === 3 ? ['DEF','MID','FWD'] : ['DEF','MID','MID','FWD'];
+  shape.forEach((n, band) => {
+    const y = shape.length === 3 ? bandY[band] : [78, 62, 42, 20][band];
+    for(let i = 0; i < n; i++){
+      const x = n === 1 ? 50 : 12 + (76 * i) / (n - 1);
+      out.push({ pos:kinds[band], x, y });
+    }
+  });
+  return out;
+}
+
+/* ══════════════════════════════════════════ state */
+let team = {
+  budget: 200,
+  formation: '442',
+  picks: [],        // index-aligned with slotsFor(): player id or null
+  name: '',
+};
+let armed = -1;     // slot waiting for a player, from tap-then-tap
+
+function slots(){ return slotsFor(team.formation); }
+function resizePicks(){
+  const n = slots().length;
+  const next = new Array(n).fill(null);
+  // keep players whose position still fits, in order
+  const carry = team.picks.filter(Boolean).map(id => byId.get(id)).filter(Boolean);
+  const spec = slots();
+  carry.forEach(p => {
+    const i = spec.findIndex((s, k) => next[k] === null && s.pos === p.p);
+    if(i !== -1) next[i] = p.i;
+  });
+  team.picks = next;
+}
+const spent  = () => team.picks.reduce((t, id) => t + (id ? byId.get(id).v : 0), 0);
+const left   = () => team.budget - spent();
+const filled = () => team.picks.filter(Boolean).length;
+
+/* ══════════════════════════════════════════ render */
+function renderControls(){
+  $('budgets').innerHTML = S.budgets.map(b =>
+    `<button type="button" data-b="${b.id}" aria-pressed="${team.budget === b.id}" title="${esc(b.note)}">${b.label}</button>`).join('');
+  $('formations').innerHTML = S.formations.map(f =>
+    `<button type="button" data-f="${f.id}" aria-pressed="${team.formation === f.id}">${f.label}</button>`).join('');
+
+  $('budgets').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    team.budget = +b.dataset.b; renderControls(); renderMoney(); renderMarket(); persist();
+  }));
+  $('formations').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    team.formation = b.dataset.f; resizePicks();
+    renderControls(); renderPitch(); renderMoney(); renderMarket(); persist();
+  }));
+}
+
+function renderPitch(){
+  const spec = slots();
+  $('slots').innerHTML = spec.map((s, i) => {
+    const p = team.picks[i] ? byId.get(team.picks[i]) : null;
+    return `<div class="slot${p ? ' filled' : ''}${s.pos === 'GK' ? ' gk' : ''}${armed === i ? ' armed' : ''}"
+                 data-slot="${i}" style="left:${s.x}%;top:${s.y}%"
+                 role="button" tabindex="0"
+                 aria-label="${p ? esc(p.n) : 'Empty ' + s.pos + ' slot'}">
+      <span class="shirt">${p ? esc(String(p.r)) : esc(s.pos)}</span>
+      ${p ? `<span class="slot-name">${esc(p.n)}</span><span class="slot-val">£${p.v}m</span>` : ''}
+      ${p ? `<button class="slot-x" type="button" data-drop="${i}" aria-label="Remove ${esc(p.n)}">×</button>` : ''}
+    </div>`;
+  }).join('');
+
+  $('slots').querySelectorAll('.slot').forEach(el => {
+    const i = +el.dataset.slot;
+    el.addEventListener('click', e => {
+      if(e.target.dataset.drop !== undefined){ setSlot(i, null); return; }
+      armed = armed === i ? -1 : i;
+      renderPitch(); renderMarket();
+      if(armed === i) WW.toast(`Pick a ${spec[i].pos} for that slot`);
+    });
+    el.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); el.click(); }
+      if(e.key === 'Delete' || e.key === 'Backspace'){ e.preventDefault(); setSlot(i, null); }
+    });
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('over'));
+    el.addEventListener('drop', e => {
+      e.preventDefault(); el.classList.remove('over');
+      const id = +e.dataTransfer.getData('text/plain');
+      if(id) tryPlace(i, id);
+    });
+  });
+}
+
+function renderMoney(){
+  const s = spent(), l = left();
+  const over = l < 0;
+  $('left').textContent = (over ? '−£' : '£') + Math.abs(l) + 'm';
+  $('left').classList.toggle('over', over);
+  const pct = Math.max(0, Math.min(100, (s / team.budget) * 100));
+  $('spent-bar').style.width = pct + '%';
+  $('spent-bar').style.background = over ? 'var(--red)' : pct > 88 ? 'var(--amber)' : 'var(--green)';
+
+  const picked = team.picks.filter(Boolean).map(id => byId.get(id));
+  $('s-count').textContent = filled() + '/' + slots().length;
+  $('s-spend').textContent = '£' + s + 'm';
+  $('s-rating').textContent = picked.length
+    ? (picked.reduce((t, p) => t + p.r, 0) / picked.length).toFixed(1) : '—';
+  $('s-clubs').textContent = new Set(picked.map(p => p.c)).size;
+}
+
+function renderMarket(){
+  const q = $('q').value.trim().toLowerCase();
+  const pos = $('f-pos').value;
+  const [key, dir] = $('f-sort').value.split('');
+  const affordOnly = $('f-afford').checked;
+  const budgetLeft = left();
+  const needPos = armed >= 0 ? slots()[armed].pos : null;
+
+  let list = S.players.filter(p => {
+    if(pos && p.p !== pos) return false;
+    if(needPos && p.p !== needPos) return false;
+    if(q && !(p.n.toLowerCase().includes(q) || p.c.toLowerCase().includes(q))) return false;
+    if(affordOnly && !team.picks.includes(p.i) && p.v > budgetLeft) return false;
+    return true;
+  });
+
+  const cmp = { v:(a,b)=>a.v-b.v, r:(a,b)=>a.r-b.r, n:(a,b)=>a.n.localeCompare(b.n) }[key];
+  list.sort((a,b) => dir === '-' ? -cmp(a,b) : cmp(a,b));
+
+  $('mk-count').textContent = list.length + ' player' + (list.length === 1 ? '' : 's');
+  if(!list.length){ $('plist').innerHTML = `<div class="pl-empty">Nobody matches that.</div>`; return; }
+
+  $('plist').innerHTML = list.map(p => {
+    const picked = team.picks.includes(p.i);
+    const dear = !picked && p.v > budgetLeft;
+    return `<button class="pl${picked ? ' picked' : ''}${dear ? ' unaffordable' : ''}"
+              type="button" data-p="${p.i}" draggable="${!picked}"
+              ${picked ? 'disabled' : ''} title="${esc(p.c)}">
+      <span class="pl-pos ${p.p}">${p.p}</span>
+      <span style="min-width:0"><span class="pl-n">${esc(p.n)}</span><br/><span class="pl-c">${esc(p.c)}</span></span>
+      <span class="pl-r">${p.r}</span>
+      <span class="pl-v">£${p.v}m</span>
+    </button>`;
+  }).join('');
+
+  $('plist').querySelectorAll('.pl').forEach(el => {
+    const id = +el.dataset.p;
+    el.addEventListener('click', () => addPlayer(id));
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', String(id));
+      e.dataTransfer.effectAllowed = 'copy';
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+  });
+}
+
+function renderAll(){ renderPitch(); renderMoney(); renderMarket(); }
+
+/* ══════════════════════════════════════════ picking */
+function tryPlace(slotIndex, playerId){
+  const p = byId.get(playerId);
+  const spec = slots()[slotIndex];
+  if(!p || !spec) return;
+  if(p.p !== spec.pos){ WW.toast(`${p.n} is a ${p.p}. That slot needs a ${spec.pos}.`); return; }
+  if(team.picks.includes(p.i)){ WW.toast(`${p.n} is already in the side.`); return; }
+  const outgoing = team.picks[slotIndex] ? byId.get(team.picks[slotIndex]).v : 0;
+  if(p.v - outgoing > left()){ WW.toast(`£${p.v}m is more than you have left.`); return; }
+  setSlot(slotIndex, p.i);
+}
+
+function setSlot(i, playerId){
+  team.picks[i] = playerId;
+  armed = -1;
+  renderAll(); persist();
+}
+
+function addPlayer(id){
+  const p = byId.get(id);
+  if(!p || team.picks.includes(id)) return;
+  if(armed >= 0){ tryPlace(armed, id); return; }
+  const spec = slots();
+  const i = spec.findIndex((s, k) => s.pos === p.p && !team.picks[k]);
+  if(i === -1){ WW.toast(`No free ${p.p} slot in a ${team.formation.split('').join('-')}.`); return; }
+  if(p.v > left()){ WW.toast(`£${p.v}m is more than you have left.`); return; }
+  setSlot(i, p.i);
+}
+
+function autofill(){
+  const spec = slots();
+  const used = new Set();
+
+  /* Start from the cheapest legal XI. Filling on best value-per-pound first
+     can blow the cap outright at £100m, which is how this used to end up
+     fifteen million overdrawn. */
+  const cheapestFor = pos => S.players
+    .filter(x => x.p === pos && !used.has(x.i))
+    .sort((a, b) => a.v - b.v)[0];
+
+  const next = new Array(spec.length).fill(null);
+  spec.forEach((sl, i) => {
+    const p = cheapestFor(sl.pos);
+    if(p){ next[i] = p.i; used.add(p.i); }
+  });
+
+  let cost = next.reduce((t, id) => t + (id ? byId.get(id).v : 0), 0);
+
+  if(cost > team.budget){
+    /* Not even the cheapest XI fits. Field as many as the money covers and
+       say so rather than quietly going overdrawn. */
+    const order = next.map((id, i) => ({ i, v: byId.get(id).v })).sort((a, b) => a.v - b.v);
+    const keep = [];
+    let running = 0;
+    order.forEach(o => { if(running + o.v <= team.budget){ running += o.v; keep.push(o.i); } });
+    team.picks = next.map((id, i) => keep.includes(i) ? id : null);
+    armed = -1; renderAll(); persist();
+    WW.toast(`£${team.budget}m only covers ${keep.length} of ${spec.length}.`);
+    return;
+  }
+
+  /* Then spend what is left on the biggest rating gain per pound. */
+  let budgetLeft = team.budget - cost;
+  for(let guard = 0; guard < 400; guard++){
+    let best = null;
+    for(let i = 0; i < spec.length; i++){
+      const cur = byId.get(next[i]);
+      S.players.forEach(x => {
+        if(x.p !== spec[i].pos || used.has(x.i)) return;
+        const gain = x.r - cur.r, extra = x.v - cur.v;
+        if(gain <= 0 || extra > budgetLeft) return;
+        const worth = gain / Math.max(extra, 1);
+        if(!best || worth > best.worth) best = { i, x, cur, extra, worth };
+      });
+    }
+    if(!best) break;
+    budgetLeft -= best.extra;
+    used.delete(best.cur.i); used.add(best.x.i);
+    next[best.i] = best.x.i;
+  }
+
+  team.picks = next;
+  armed = -1; renderAll(); persist();
+  WW.toast(`Best XI I could field for £${team.budget - budgetLeft}m.`);
+}
+
+/* ══════════════════════════════════════════ persistence and sharing */
+function persist(){
+  team.name = $('team-name').value;
+  WW.store.set('squad:current', team);
+}
+
+function encode(){
+  return [team.budget, team.formation, team.picks.map(x => x || 0).join('.'),
+          encodeURIComponent(team.name || '')].join('~');
+}
+function decode(str){
+  try{
+    const [b, f, picks, name] = str.split('~');
+    if(!S.formations.some(x => x.id === f)) return false;
+    team.budget = +b || 200;
+    team.formation = f;
+    const want = slotsFor(f).length;
+    const ids = picks.split('.').map(Number);
+    team.picks = new Array(want).fill(null)
+      .map((_, i) => (ids[i] && byId.has(ids[i])) ? ids[i] : null);
+    team.name = decodeURIComponent(name || '');
+    return true;
+  }catch(e){ return false; }
+}
+
+$('share').addEventListener('click', async () => {
+  const url = location.origin + location.pathname + '#' + encode();
+  try{
+    await navigator.clipboard.writeText(url);
+    WW.toast('Link copied — anyone opening it gets this exact side.');
+  }catch(e){
+    history.replaceState(null, '', '#' + encode());
+    WW.toast('Copy the address bar to share this side.');
+  }
+});
+
+$('save').addEventListener('click', () => {
+  const list = WW.store.get('squad:saved', []);
+  const name = ($('team-name').value || '').trim() || `Untitled ${list.length + 1}`;
+  list.unshift({ id:WW.uid(), name, code:encode(), when:Date.now(), spend:spent(), n:filled() });
+  WW.store.set('squad:saved', list.slice(0, 12));
+  renderSaved();
+  WW.toast(`Saved “${name}”.`);
+});
+
+function renderSaved(){
+  const list = WW.store.get('squad:saved', []);
+  if(!list.length){ $('saved').innerHTML = ''; return; }
+  $('saved').innerHTML = `<span class="ttl">Saved sides</span>` + list.map(s =>
+    `<div class="saved">
+      <span>${esc(s.name)} <span style="color:var(--text-3)">· ${s.n}/11 · £${s.spend}m</span></span>
+      <span style="display:flex;gap:6px">
+        <button class="btn sm" data-load="${s.id}" type="button">Load</button>
+        <button class="btn sm" data-del="${s.id}" type="button">Delete</button>
+      </span>
+    </div>`).join('');
+
+  $('saved').querySelectorAll('[data-load]').forEach(b => b.addEventListener('click', () => {
+    const s = WW.store.get('squad:saved', []).find(x => x.id === b.dataset.load);
+    if(s && decode(s.code)){ $('team-name').value = team.name; renderControls(); renderAll(); persist(); WW.toast(`Loaded “${s.name}”.`); }
+  }));
+  $('saved').querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+    WW.store.set('squad:saved', WW.store.get('squad:saved', []).filter(x => x.id !== b.dataset.del));
+    renderSaved();
+  }));
+}
+
+/* ══════════════════════════════════════════ boot */
+(function(){
+  const fromHash = location.hash.length > 2 && decode(location.hash.slice(1));
+  if(!fromHash){
+    const saved = WW.store.get('squad:current', null);
+    if(saved && S.formations.some(f => f.id === saved.formation)){
+      team = Object.assign(team, saved);
+      const want = slotsFor(team.formation).length;
+      if(!Array.isArray(team.picks) || team.picks.length !== want) resizePicks();
+    }
+  }
+  if(!team.picks.length) resizePicks();
+  $('team-name').value = team.name || '';
+})();
+
+renderControls(); renderAll(); renderSaved();
+
+['q','f-pos','f-sort','f-afford'].forEach(id =>
+  $(id).addEventListener('input', renderMarket));
+$('team-name').addEventListener('input', WW.debounce(persist, 300));
+$('clear').addEventListener('click', () => {
+  team.picks = team.picks.map(() => null); armed = -1; renderAll(); persist();
+});
+$('autofill').addEventListener('click', autofill);
+window.addEventListener('hashchange', () => {
+  if(location.hash.length > 2 && decode(location.hash.slice(1))){
+    $('team-name').value = team.name; renderControls(); renderAll();
+  }
+});
+</script>
+</body>
