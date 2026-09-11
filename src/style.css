@@ -94,6 +94,7 @@ h1 em, h2 em { color: #c1734b; font-weight: 500; }
 .closing-copy { max-width: 400px; margin: 32px 0; color: rgba(233, 230, 217, .72); font-size: 15px; line-height: 1.7; }
 .evening-menu { max-width: 510px; margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(233, 230, 217, .38); border-left: 1px solid rgba(233, 230, 217, .38); }
 .evening-menu span { padding: 15px 13px; border-right: 1px solid rgba(233, 230, 217, .38); border-bottom: 1px solid rgba(233, 230, 217, .38); color: #e9e6d9; font: 10px/1.2 'DM Mono', monospace; letter-spacing: .1em; }
+.barfi-note { max-width: 430px; margin: 22px 0 0; color: rgba(233, 230, 217, .6); font-size: 12px; line-height: 1.6; }
 .rsvp-message { color: #c1734b; margin-top: 34px; font: 500 15px 'DM Mono', monospace; letter-spacing: .04em; }
 
 .architectural-lines { position: absolute; inset: 0 5% auto auto; width: 31%; height: 100%; opacity: .22; pointer-events: none; }
