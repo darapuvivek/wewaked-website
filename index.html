@@ -3,80 +3,93 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1d211d" />
-    <meta name="description" content="An after-hours invitation at Silver Palm." />
+    <meta name="theme-color" content="#11120f" />
+    <meta name="description" content="A Friday after-hours invitation at Silver Palm." />
     <title>After Hours | Silver Palm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <main>
-      <section class="invitation" aria-labelledby="invitation-title">
-        <div class="topline">
-          <p class="index">01 / AFTER-HOURS AT HOME</p>
-          <p class="date">FRIDAY, SEPTEMBER 11</p>
-        </div>
-
-        <div class="hero-copy">
-          <p class="eyebrow">An invitation for the team</p>
-          <h1 id="invitation-title">The best work<br />happens <em>after hours.</em></h1>
-          <p class="intro">Consider this an open invitation to leave the day at the door. Come by for an easy evening, good food, and conversation that has nothing to do with the next meeting.</p>
-        </div>
-
-        <div class="house-mark" aria-hidden="true">
-          <div class="roof"></div>
-          <div class="floor-plan">
-            <span></span><span></span><span></span><span></span>
+    <main class="experience" aria-label="Friday after-hours invitation">
+      <div class="progress" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="rail">
+        <section class="scene scene-intro is-active" aria-labelledby="intro-title">
+          <div class="scene-number">01 / 05</div>
+          <div class="orb orb-coral"></div>
+          <div class="intro-grid">
+            <p class="kicker">FRIDAY NIGHT / PRIVATE INVITATION</p>
+            <h1 id="intro-title">What if<br />the best part of<br />Friday starts <em>later?</em></h1>
+            <p class="scene-copy">Leave the work week where it belongs. This is an invitation to come over, press pause, and let the evening decide what happens next.</p>
           </div>
-          <p>THE AFTER-HOURS<br />TABLE</p>
-        </div>
+          <p class="side-label">SILVER PALM<br />AFTER HOURS</p>
+          <button class="scene-cta next" type="button">Enter the evening <span aria-hidden="true">→</span></button>
+        </section>
 
-        <div class="scroll-note">SCROLL TO FIND YOUR WAY <span></span></div>
-      </section>
-
-      <section class="details" aria-label="Gathering details">
-        <div class="details-heading">
-          <p class="eyebrow">The coordinates</p>
-          <h2>A good evening<br />begins <em>here.</em></h2>
-        </div>
-
-        <div class="location-card">
-          <div class="card-top">
-            <span>02 / THE ADDRESS</span>
-            <span>FRIDAY / 7:30 PM ONWARDS</span>
+        <section class="scene scene-plan" aria-labelledby="plan-title">
+          <div class="scene-number">02 / 05</div>
+          <div class="plan-content">
+            <p class="kicker">THE BRIEF</p>
+            <h2 id="plan-title">A table instead<br />of a <em>timeline.</em></h2>
+            <div class="time-block"><strong>7:30</strong><span>PM ONWARDS<br />UNTIL WE ARE DONE</span></div>
           </div>
-          <div class="address">
-            <p>101, Jana Jeeva<br />Silver Palm Apartment<br />Haralur Road</p>
+          <div class="game-list" aria-label="Games available">
+            <span>SEQUENCE</span><span>MONOPOLY</span><span>UNO</span>
+            <p>THE BOARD IS SET.<br />THE RULES ARE FLEXIBLE.</p>
           </div>
-          <div class="card-bottom">
-            <a class="text-link" href="https://www.google.com/maps/search/?api=1&query=101%2C+Jana+Jeeva+Silver+Palm+Apartment%2C+Haralur+Road" target="_blank" rel="noreferrer">Open directions <span aria-hidden="true">↗</span></a>
-            <button class="copy-address" type="button">Copy address</button>
-          </div>
-        </div>
-      </section>
+          <button class="scene-cta next" type="button">What is for dinner? <span aria-hidden="true">→</span></button>
+        </section>
 
-      <section class="closing">
-        <div class="architectural-lines" aria-hidden="true">
-          <i></i><i></i><i></i><i></i><i></i>
-        </div>
-        <p class="eyebrow">One more thing</p>
-        <h2>There is always<br />room for <em>one more.</em></h2>
-        <p class="closing-copy">No formalities, no agenda. Just a table, a few familiar faces, and an unhurried evening together. We begin at 7:30 PM and, because it is Friday, stay for as long as we feel like it.</p>
-        <div class="evening-menu" aria-label="What to expect">
-          <span>SEQUENCE</span>
-          <span>MONOPOLY</span>
-          <span>UNO</span>
-          <span>DRINKS + FOOD</span>
-        </div>
-        <p class="barfi-note">P.S. Barfi is away tonight, so there are no animals to worry about. xD</p>
-        <p class="rsvp-message" aria-live="polite">See you this evening.</p>
-      </section>
+        <section class="scene scene-food" aria-labelledby="food-title">
+          <div class="scene-number">03 / 05</div>
+          <div class="food-heading">
+            <p class="kicker">YOUR INPUT, PLEASE</p>
+            <h2 id="food-title">Pick the<br /><em>main character.</em></h2>
+            <p class="scene-copy">Drinks are chilled. Food is still up for debate. Choose what you would be happiest finding on the table.</p>
+          </div>
+          <div class="food-options" role="group" aria-label="Food preference">
+            <button type="button" data-food="Biryani">Biryani <span>01</span></button>
+            <button type="button" data-food="Pizza">Pizza <span>02</span></button>
+            <button type="button" data-food="Burgers">Burgers <span>03</span></button>
+            <button type="button" data-food="Surprise me">Surprise me <span>04</span></button>
+          </div>
+          <p class="food-status" aria-live="polite">Make your pick. No wrong answers.</p>
+          <button class="scene-cta next" type="button">Set the destination <span aria-hidden="true">→</span></button>
+        </section>
+
+        <section class="scene scene-route" aria-labelledby="route-title">
+          <div class="scene-number">04 / 05</div>
+          <div class="route-content">
+            <p class="kicker">THE COORDINATES</p>
+            <h2 id="route-title">Find the<br /><em>good light.</em></h2>
+            <address>101, Jana Jeeva<br />Silver Palm Apartment<br />Haralur Road</address>
+            <div class="route-actions">
+              <a href="https://www.google.com/maps/search/?api=1&query=101%2C+Jana+Jeeva+Silver+Palm+Apartment%2C+Haralur+Road" target="_blank" rel="noreferrer">Open directions <span aria-hidden="true">↗</span></a>
+              <button class="copy-address" type="button">Copy address</button>
+            </div>
+          </div>
+          <div class="map-art" aria-hidden="true"><span></span><span></span><span></span><i>101</i></div>
+          <button class="scene-cta next" type="button">One last note <span aria-hidden="true">→</span></button>
+        </section>
+
+        <section class="scene scene-outro" aria-labelledby="outro-title">
+          <div class="scene-number">05 / 05</div>
+          <div class="outro-content">
+            <p class="kicker">NO END TIME</p>
+            <h2 id="outro-title">Stay for the<br />game. Stay for<br /><em>everything after.</em></h2>
+            <p class="scene-copy">There will be food, drinks, and no expectation to rush away. Also, Barfi is away tonight, so no animals to worry about. xD</p>
+            <p class="signature">SEE YOU AFTER HOURS.</p>
+          </div>
+          <div class="outro-sun" aria-hidden="true"></div>
+          <button class="scene-cta restart" type="button">Back to the start <span aria-hidden="true">←</span></button>
+        </section>
+      </div>
+      <nav class="controls" aria-label="Invitation navigation">
+        <button class="previous" type="button" aria-label="Previous scene">←</button>
+        <span class="scene-count">01 <i>/</i> 05</span>
+        <button class="next" type="button" aria-label="Next scene">→</button>
+      </nav>
     </main>
-    <footer>
-      <span>WITH WARMTH</span>
-      <span>SILVER PALM / 2026</span>
-    </footer>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
